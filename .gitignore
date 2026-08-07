@@ -1,0 +1,15 @@
+# Librerie: si riscaricano con "npm install", non vanno versionate (pesano troppo)
+node_modules/
+
+# Codice compilato: si rigenera con "npm run build"
+dist/
+
+# Segreti: password e connection string NON devono MAI finire su Git
+.env
+.env.local
+
+# Log e file di sistema
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
