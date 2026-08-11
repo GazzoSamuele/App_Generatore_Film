@@ -1,24 +1,17 @@
 {
   "compilerOptions": {
-    // --- Che tipo di JavaScript produrre ---
-    "target": "ES2022",        // versione di JS finale: moderna, supportata da Node 24
-    "module": "nodenext",      // usiamo i moduli ESM (import/export), standard di Node
+    "target": "ES2022",
+    "module": "nodenext",
     "moduleResolution": "nodenext",
-
-    // --- Dove stanno i file ---
-    "rootDir": "./src",        // il codice sorgente TypeScript sta qui
-    "outDir": "./dist",        // il JavaScript compilato finirà qui
-
-    // --- Severità dei controlli ---
-    "strict": true,            // attiva tutti i controlli principali: ti obbliga a gestire null/undefined
-    "noImplicitAny": true,     // vieta variabili di tipo "any" implicito: devi dichiarare i tipi
-
-    // --- Interoperabilità e comodità ---
-    "esModuleInterop": true,   // permette "import express from 'express'" anche su librerie vecchie
-    "resolveJsonModule": true, // permette di importare file .json
-    "skipLibCheck": true,      // non ricontrolla i tipi dentro node_modules: compilazione più veloce
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],     // compila tutto ciò che sta in src/
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

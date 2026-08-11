@@ -1,11 +1,5 @@
 import type { IFilm } from "../models/Film.js";
 
-/**
- * VOCABOLARIO CONTROLLATO dei generi.
- * Regola d'oro: l'algoritmo confronta stringhe, quindi "Fantascienza" e "Sci-Fi"
- * sarebbero due generi DIVERSI e non farebbero mai match. Definire una lista
- * chiusa di valori ammessi evita silenziosamente tonnellate di bug.
- */
 export const GENERI = [
   "Azione",
   "Avventura",
@@ -23,7 +17,6 @@ export const GENERI = [
   "Biografico",
 ] as const;
 
-/** Catalogo di esempio: 24 titoli tra film e serie, generi ben distribuiti. */
 export const catalogo: IFilm[] = [
   {
     titolo: "Inception",
