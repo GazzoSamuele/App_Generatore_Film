@@ -16,7 +16,6 @@ function App() {
       {schermata === "consigli" && <ListaConsigli />}
     </div>
   );
-  
 }
 
 export default App

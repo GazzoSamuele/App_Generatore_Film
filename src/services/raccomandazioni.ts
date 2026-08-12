@@ -6,9 +6,10 @@ import {
   type VisioneRisolta,
 } from "./profiloUtente.js";
 
-const PESO_GENERI = 0.55;
-const PESO_TAG = 0.3;
-const PESO_QUALITA = 0.15;
+const PESO_GENERI = 0.40;
+const PESO_TAG = 0.25;
+const PESO_QUALITA = 0.20;
+const PESO_PERSONE = 0.15;
 const PENALITA_PIATTAFORMA = 0.15;
 const MAX_PER_GENERE = 3;
 
@@ -56,6 +57,23 @@ function generaMotivi(film: IFilm, profilo: ProfiloGusti): string[] {
     motivi.push(`Molto apprezzato (${film.votoMedio}/10)`);
   }
 
+  const amiUnDeterminatoRegista = profilo.nomi.get(film.regista) ?? 0;
+  if (amiUnDeterminatoRegista > 0.2) {
+    motivi.push(`Ti piace il regista ${film.regista}`);
+  }
+
+  for (const attore of film.cast) {
+    const amiUnDeterminatoAttore = profilo.nomi.get(attore) ?? 0;
+    if (amiUnDeterminatoAttore > 0.2) {
+      motivi.push(`Ti piace l'attore ${attore}`);
+      break;
+    }
+  }
+
+  if (motivi.length === 0) {
+    motivi.push("Perché sì");
+  }
+
   return motivi;
 }
 
@@ -67,9 +85,10 @@ export function calcolaPunteggio(
   const affinitaGeneri = affinitaMedia(film.generi, profilo.generi);
   const affinitaTag = affinitaMedia(film.tag, profilo.tag);
   const qualita = film.votoMedio / 10;
+  const affinitaPersone = affinitaMedia([film.regista, ...film.cast], profilo.nomi);
 
   let punteggio =
-    affinitaGeneri * PESO_GENERI + affinitaTag * PESO_TAG + qualita * PESO_QUALITA;
+    affinitaGeneri * PESO_GENERI + affinitaTag * PESO_TAG + qualita * PESO_QUALITA + affinitaPersone * PESO_PERSONE;
 
   if (piattaformeAttive.length > 0 && !piattaformeAttive.includes(film.piattaforma)) {
     punteggio -= PENALITA_PIATTAFORMA;
@@ -120,7 +139,7 @@ export async function generaRaccomandazioni(utenteId: string, limite = 8) {
   const visioni: VisioneRisolta[] = [];
   for (const visione of utente.storicoVisto) {
     const film = filmPerId.get(String(visione.film));
-    if (film) visioni.push({ film, valutazione: visione.valutazione });
+    if (film) visioni.push({ film, valutazione: visione.valutazione, dataVisione: visione.dataVisione });
   }
 
   const profilo = costruisciProfilo(utente.generiPreferiti, visioni);
