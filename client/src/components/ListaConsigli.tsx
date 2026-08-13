@@ -12,21 +12,37 @@ type Stato =
 function ListaConsigli() {
   const [stato, setStato] = useState<Stato>({ fase: "caricamento" });
 
-  useEffect(() => {
-    async function carica() {
-      try {
-        const risposta = await fetch(`/api/raccomandazioni/${UTENTE_ID}`);
-        if (!risposta.ok) throw new Error(`Errore ${risposta.status}`);
-        const dati = await risposta.json();
-        setStato({ fase: "pronto", dati: dati.raccomandazioni });
-      } catch (errore) {
-        setStato({
-          fase: "errore",
-          messaggio: "Errore nel caricamento delle raccomandazioni",
-        })
-        console.error(errore);;
-      }
+  async function carica() {
+    try {
+      const risposta = await fetch(`/api/raccomandazioni/${UTENTE_ID}`);
+      if (!risposta.ok) throw new Error(`Errore ${risposta.status}`);
+      const dati = await risposta.json();
+      setStato({ fase: "pronto", dati: dati.raccomandazioni });
+    } catch (errore) {
+      setStato({
+        fase: "errore",
+        messaggio: "Errore nel caricamento delle raccomandazioni",
+      });
+      console.error(errore);
     }
+  }
+  async function segnaVisto(id: string, valutazione: number) {
+    try {
+      const risposta = await fetch(`/api/utenti/${UTENTE_ID}/visioni`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filmId: id, valutazione }),
+      });
+
+      if (!risposta.ok) throw new Error(`Errore ${risposta.status}`);
+
+      await carica();
+    } catch (errore) {
+      console.error("Errore nel segnare come visto:", errore);
+    }
+  }
+
+  useEffect(() => {
     carica();
   }, []);
 
@@ -36,7 +52,7 @@ function ListaConsigli() {
   return (
     <div className="lista">
       {stato.dati.map((r) => (
-        <Card key={r.titolo} raccomandazione={r} />
+        <Card key={r.titolo} raccomandazione={r} onSegnaVisto={segnaVisto} />
       ))}
     </div>
   );

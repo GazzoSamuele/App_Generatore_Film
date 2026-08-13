@@ -1,4 +1,5 @@
 export interface Raccomandazione {
+  id: string;
   titolo: string;
   tipo: "film" | "serie";
   anno: number;

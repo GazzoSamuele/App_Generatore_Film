@@ -20,6 +20,7 @@ export async function getRaccomandazioni(req: Request, res: Response) {
     res.json({
       totale: raccomandazioni.length,
       raccomandazioni: raccomandazioni.map((r) => ({
+        id: String(r.film._id),
         titolo: r.film.titolo,
         tipo: r.film.tipo,
         anno: r.film.anno,

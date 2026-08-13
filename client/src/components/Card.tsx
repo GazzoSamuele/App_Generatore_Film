@@ -2,9 +2,10 @@ import type { Raccomandazione } from "../tipi";
 
 interface Props {
   raccomandazione: Raccomandazione;
+  onSegnaVisto: (id: string, valutazione: number) => void;
 }
 
-function Card({ raccomandazione }: Props) {
+function Card({ raccomandazione, onSegnaVisto }: Props) {
   return (
     <div className="card">
       <img src={raccomandazione.posterUrl} alt={raccomandazione.titolo} className="card__poster" />
@@ -22,6 +23,9 @@ function Card({ raccomandazione }: Props) {
         </ul>
         <p className="card__final-score">Punteggio finale: {raccomandazione.punteggio.toFixed(1)}</p>
       </div>
+
+      <button onClick={() => onSegnaVisto(raccomandazione.id, 4)}>Mi è piaciuto</button>
+      <button onClick={() => onSegnaVisto(raccomandazione.id, 2)}>Non mi è piaciuto</button>
     </div>
   );
 }
