@@ -4,7 +4,7 @@ export interface Raccomandazione {
   tipo: "film" | "serie";
   anno: number;
   generi: string[];
-  piattaforma: string;
+  piattaforme: string[];
   posterUrl: string;
   votoMedio: number;
   compatibilita: number;

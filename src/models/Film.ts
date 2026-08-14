@@ -7,7 +7,7 @@ export interface IFilm {
   tag: string[];
   anno: number;
   durataMinuti: number;
-  piattaforma: string;
+  piattaforme: string[];
   regista: string;
   cast: string[];
   descrizione: string;
@@ -23,7 +23,7 @@ const filmSchema = new Schema<IFilm>(
     tag: { type: [String], default: [] },
     anno: { type: Number, required: true },
     durataMinuti: { type: Number, default: 0 },
-    piattaforma: { type: String, default: "Sconosciuta" },
+    piattaforme: { type: [String], default: [] },
     regista: { type: String, default: "" },
     cast: { type: [String], default: [] },
     descrizione: { type: String, default: "" },

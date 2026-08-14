@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { Raccomandazione } from "../tipi";
 import Card from "./Card";
 
-const UTENTE_ID = "6a75fa5869c1c54795fa5f11";
+const UTENTE_ID = "6a7f4ec1c05324d5adec8077";
 
 type Stato =
   | { fase: "caricamento" }
@@ -11,6 +11,7 @@ type Stato =
 
 function ListaConsigli() {
   const [stato, setStato] = useState<Stato>({ fase: "caricamento" });
+  const [inInvio, setInInvio] = useState(false);
 
   async function carica() {
     try {
@@ -24,10 +25,11 @@ function ListaConsigli() {
         messaggio: "Errore nel caricamento delle raccomandazioni",
       });
       console.error(errore);
-    }
+    } 
   }
   async function segnaVisto(id: string, valutazione: number) {
     try {
+      setInInvio(true);
       const risposta = await fetch(`/api/utenti/${UTENTE_ID}/visioni`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,6 +41,8 @@ function ListaConsigli() {
       await carica();
     } catch (errore) {
       console.error("Errore nel segnare come visto:", errore);
+    } finally {
+      setInInvio(false);
     }
   }
 
@@ -52,7 +56,7 @@ function ListaConsigli() {
   return (
     <div className="lista">
       {stato.dati.map((r) => (
-        <Card key={r.titolo} raccomandazione={r} onSegnaVisto={segnaVisto} />
+        <Card key={r.titolo} raccomandazione={r} onSegnaVisto={segnaVisto} inInvio={inInvio} />
       ))}
     </div>
   );

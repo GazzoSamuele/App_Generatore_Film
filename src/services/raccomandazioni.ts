@@ -90,7 +90,11 @@ export function calcolaPunteggio(
   let punteggio =
     affinitaGeneri * PESO_GENERI + affinitaTag * PESO_TAG + qualita * PESO_QUALITA + affinitaPersone * PESO_PERSONE;
 
-  if (piattaformeAttive.length > 0 && !piattaformeAttive.includes(film.piattaforma)) {
+  const disponibileSuUnaAttiva = film.piattaforme.some((p) =>
+    piattaformeAttive.includes(p)
+  );
+
+  if (piattaformeAttive.length > 0 && !disponibileSuUnaAttiva) {
     punteggio -= PENALITA_PIATTAFORMA;
   }
 
@@ -139,7 +143,13 @@ export async function generaRaccomandazioni(utenteId: string, limite = 8) {
   const visioni: VisioneRisolta[] = [];
   for (const visione of utente.storicoVisto) {
     const film = filmPerId.get(String(visione.film));
-    if (film) visioni.push({ film, valutazione: visione.valutazione, dataVisione: visione.dataVisione });
+    if (film) {
+      visioni.push({
+        film,
+        valutazione: visione.valutazione,
+        dataVisione: visione.dataVisione,
+      });
+    }
   }
 
   const profilo = costruisciProfilo(utente.generiPreferiti, visioni);

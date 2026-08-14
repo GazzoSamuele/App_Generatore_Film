@@ -25,7 +25,7 @@ export async function getRaccomandazioni(req: Request, res: Response) {
         tipo: r.film.tipo,
         anno: r.film.anno,
         generi: r.film.generi,
-        piattaforma: r.film.piattaforma,
+        piattaforme: r.film.piattaforme,
         posterUrl: r.film.posterUrl,
         votoMedio: r.film.votoMedio,
         compatibilita: r.compatibilita,

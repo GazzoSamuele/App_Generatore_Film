@@ -136,11 +136,16 @@
     font-weight: 600;
   }
 
+  &__azioni button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  }
+  
   &__reasons {
     display: flex;
     flex-direction: column;
     gap: v.$spazio-xs;
-
+  
     li {
       position: relative;
       padding-left: v.$spazio-md;
