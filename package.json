@@ -8,7 +8,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "seed": "tsx src/seed/seedCatalogo.ts"
+    "seed": "tsx src/seed/seedCatalogo.ts",
+    "importa": "tsx src/seed/importaTMDB.ts"
   },
   "keywords": [],
   "author": "",

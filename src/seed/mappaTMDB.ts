@@ -9,12 +9,16 @@ const MAX_TAG = 8;
 
 const PIATTAFORME_NORMALIZZATE: Record<string, string> = {
   "Amazon Prime Video": "Prime Video",
-  "Netflix basic with Ads": "Netflix",
   "Disney Plus": "Disney+",
 };
 
 function normalizzaPiattaforma(nome: string): string {
-  return PIATTAFORME_NORMALIZZATE[nome] ?? nome;
+  const pulito = nome
+    .replace(/ Amazon Channels?$/i, "")
+    .replace(/ with Ads$/i, "")
+    .trim();
+
+  return PIATTAFORME_NORMALIZZATE[pulito] ?? pulito;
 }
 
 export function annoDa(releaseDate: string): number {
@@ -32,9 +36,13 @@ export function mappaFilm(dettaglio: DettaglioFilmTMDB): IFilm {
     tag: (dettaglio.keywords?.keywords ?? []).slice(0, MAX_TAG).map((k) => k.name),
     anno: annoDa(dettaglio.release_date),
     durataMinuti: dettaglio.runtime ?? 0,
-    piattaforme: (disponibilita?.flatrate ?? []).map((p) =>
-      normalizzaPiattaforma(p.provider_name)
-    ),
+    piattaforme: [
+      ...new Set(
+        (disponibilita?.flatrate ?? []).map((p) =>
+          normalizzaPiattaforma(p.provider_name)
+        )
+      ),
+    ],
     regista: dettaglio.credits.crew.find((p) => p.job === "Director")?.name ?? "",
     cast: dettaglio.credits.cast.slice(0, MAX_ATTORI).map((p) => p.name),
     descrizione: dettaglio.overview,

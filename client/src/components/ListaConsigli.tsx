@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Raccomandazione } from "../tipi";
 import Card from "./Card";
-
-const UTENTE_ID = "6a7f4ec1c05324d5adec8077";
+import { UTENTE_ID } from "../config";
 
 type Stato =
   | { fase: "caricamento" }

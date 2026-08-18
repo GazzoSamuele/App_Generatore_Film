@@ -78,3 +78,35 @@ export async function aggiungiVisione(req: Request, res: Response) {
     res.status(500).json({ errore: "Errore interno del server" });
   }
 }
+
+export async function aggiornaPreferenze(req: Request, res: Response) {
+  try {
+    const { utenteId } = req.params;
+    const { generiPreferiti } = req.body;
+    
+    if (!Types.ObjectId.isValid(String(utenteId))) {
+      res.status(400).json({ errore: "utenteId non valido" });
+      return;
+    }
+
+    if (!Array.isArray(generiPreferiti) || generiPreferiti.some(g => typeof g !== 'string')) {
+      res.status(400).json({ errore: "generiPreferiti deve essere un array di stringhe" });
+      return;
+    }
+
+    const utente = await Utente.findByIdAndUpdate(
+      utenteId,
+      { $set: { generiPreferiti } },
+      { new: true }
+    );
+    if (!utente) {
+      res.status(404).json({ errore: "Utente non trovato" });
+      return;
+    }
+    res.json({ messaggio: "Preferenze aggiornate", generiPreferiti: utente.generiPreferiti });
+
+  } catch (errore) {
+    console.error("Errore nell'aggiornamento delle preferenze:", errore);
+    res.status(500).json({ errore: "Errore interno del server" });
+  }
+}
