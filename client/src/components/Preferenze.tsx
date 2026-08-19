@@ -6,7 +6,7 @@ interface Props {
 }
 
 function Preferenze({ onSalvato }: Props) {
-  const [generi, setGeneri] = useState<string[]>([]);
+  const [generi, setGeneri] = useState<{ genere: string; quanti: number }[]>([])  
   const [selezionati, setSelezionati] = useState<string[]>([]);
   const [inInvio, setInInvio] = useState(false);
 
@@ -38,10 +38,10 @@ function Preferenze({ onSalvato }: Props) {
             body: JSON.stringify({ generiPreferiti: selezionati})
         });
 
-        if(!risposta.ok) throw new Error(`Errore nel caricamento del film da salvare`)
+        if(!risposta.ok) throw new Error(`Errore ${risposta.status} nel salvataggio delle preferenze`)
         onSalvato();
     }   catch (errore) {
-        console.error("Errore nel segnare come salvato", errore);
+        console.error("Errore nel salvataggio delle preferenze:", errore);
     }   finally {
         setInInvio(false)
     }
@@ -61,14 +61,14 @@ function Preferenze({ onSalvato }: Props) {
       <div className="preferenze__generi">
         {generi.map((g) => (
           <button
-            key={g}
+            key={g.genere}
             type="button"
             className={
-              selezionati.includes(g) ? "genere genere--attivo" : "genere"
+              selezionati.includes(g.genere) ? "genere genere--attivo" : "genere"
             }
-            onClick={() => alterna(g)}
+            onClick={() => alterna(g.genere)}
           >
-            {g}
+            {g.genere} ({g.quanti})
           </button>
         ))}
       </div>

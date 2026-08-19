@@ -17,7 +17,9 @@ function App() {
           onScegliGeneri={() => setSchermata("preferenze")} 
         />
       )}
-      {schermata === "consigli" && <ListaConsigli />}
+      {schermata === "consigli" && (
+        <ListaConsigli onIndietro={() => setSchermata("splash")} />
+      )}
       {schermata === "preferenze" && (
         <Preferenze onSalvato={() => setSchermata("consigli")} />
       )}  

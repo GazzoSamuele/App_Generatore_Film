@@ -11,7 +11,7 @@ const PESO_TAG = 0.25;
 const PESO_QUALITA = 0.20;
 const PESO_PERSONE = 0.15;
 const PENALITA_PIATTAFORMA = 0.15;
-const MAX_PER_GENERE = 3;
+const MAX_PER_GENERE = 4;
 
 function affinitaMedia(etichette: string[], profilo: Map<string, number>): number {
   if (etichette.length === 0) return 0;
@@ -113,12 +113,18 @@ function applicaVarieta<T extends { film: IFilm }>(classifica: T[], limite: numb
   for (const candidato of classifica) {
     if (selezionati.length === limite) break;
 
-    const genere = candidato.film.generi[0] ?? "Sconosciuto";
-    const quanti = conteggioGeneri.get(genere) ?? 0;
+    const generi =
+      candidato.film.generi.length > 0 ? candidato.film.generi : ["Sconosciuto"];
 
-    if (quanti < MAX_PER_GENERE) {
+    const saturo = generi.some(
+      (g) => (conteggioGeneri.get(g) ?? 0) >= MAX_PER_GENERE
+    );
+
+    if (!saturo) {
       selezionati.push(candidato);
-      conteggioGeneri.set(genere, quanti + 1);
+      for (const g of generi) {
+        conteggioGeneri.set(g, (conteggioGeneri.get(g) ?? 0) + 1);
+      }
     }
   }
 

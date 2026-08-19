@@ -22,7 +22,6 @@ function Card({ raccomandazione, onSegnaVisto, inInvio }: Props) {
                 <li key={index}>{motivo}</li>
             ))}
         </ul>
-        <p className="card__final-score">Punteggio finale: {raccomandazione.punteggio.toFixed(1)}</p>
       </div>
       <div className="card__azioni">
         <button disabled={inInvio} onClick={() => onSegnaVisto(raccomandazione.id, 4)}>Mi è piaciuto</button>

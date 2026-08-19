@@ -3,12 +3,16 @@ import type { Raccomandazione } from "../tipi";
 import Card from "./Card";
 import { UTENTE_ID } from "../config";
 
+
 type Stato =
   | { fase: "caricamento" }
   | { fase: "errore"; messaggio: string }
   | { fase: "pronto"; dati: Raccomandazione[] };
 
-function ListaConsigli() {
+type Props = {
+  onIndietro: () => void
+};
+function ListaConsigli({ onIndietro }: Props) {
   const [stato, setStato] = useState<Stato>({ fase: "caricamento" });
   const [inInvio, setInInvio] = useState(false);
 
@@ -54,9 +58,17 @@ function ListaConsigli() {
 
   return (
     <div className="lista">
-      {stato.dati.map((r) => (
-        <Card key={r.titolo} raccomandazione={r} onSegnaVisto={segnaVisto} inInvio={inInvio} />
-      ))}
+      <button className="lista__indietro" onClick={onIndietro}>Indietro</button>
+          <h1 className="lista__titolo">Ecco i film che ti consigliamo</h1>
+          <p className="lista__sottotitolo">  
+            Puoi segnare i film come "Mi è piaciuto" o "Non mi è piaciuto" per
+            migliorare i consigli futuri.
+          </p>
+      <div className="lista__griglia">
+        {stato.dati.map((r) => (
+          <Card key={r.titolo} raccomandazione={r} onSegnaVisto={segnaVisto} inInvio={inInvio} />
+        ))}
+      </div>
     </div>
   );
 }

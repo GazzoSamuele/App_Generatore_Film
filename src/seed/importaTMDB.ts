@@ -8,9 +8,31 @@ import type { DettaglioFilmTMDB, PaginaPopolariTMDB } from "./tipiTMDB.js";
 
 const BASE = "https://api.themoviedb.org/3";
 const LINGUA = "it-IT";
-const PAGINE = 10;
+const PAGINE_PER_GENERE = 1;
+const VOTI_MINIMI = "300";
 const PAUSA_MS = 100;
 const OGNI_QUANTI_LOG = 20;
+
+const GENERI_TMDB: Record<string, number> = {
+  Azione: 28,
+  Avventura: 12,
+  Animazione: 16,
+  Commedia: 35,
+  Crime: 80,
+  Documentario: 99,
+  Dramma: 18,
+  Famiglia: 10751,
+  Fantasy: 14,
+  Storia: 36,
+  Horror: 27,
+  Musica: 10402,
+  Mistero: 9648,
+  Romantico: 10749,
+  Fantascienza: 878,
+  Thriller: 53,
+  Guerra: 10752,
+  Western: 37,
+};
 
 const API_KEY = process.env.TMDB_API_KEY;
 
@@ -37,22 +59,32 @@ async function chiamaTMDB<T>(
 }
 
 async function raccogliIds(): Promise<number[]> {
-  const ids: number[] = [];
+  const oggi = new Date().toISOString().slice(0, 10);
+  const ids = new Set<number>();
 
-  for (let pagina = 1; pagina <= PAGINE; pagina++) {
-   const oggi = new Date().toISOString().slice(0, 10);
+  for (const [nome, idGenere] of Object.entries(GENERI_TMDB)) {
+    let raccoltiPerGenere = 0;
 
-  const dati = await chiamaTMDB<PaginaPopolariTMDB>("/discover/movie", {
-    page: String(pagina),
-    sort_by: "vote_count.desc",
-    "vote_count.gte": "1000",
-    "release_date.lte": oggi,
-  });
-    ids.push(...dati.results.map((f) => f.id));
-    await pausa(PAUSA_MS);
+    for (let pagina = 1; pagina <= PAGINE_PER_GENERE; pagina++) {
+      const dati = await chiamaTMDB<PaginaPopolariTMDB>("/discover/movie", {
+        page: String(pagina),
+        with_genres: String(idGenere),
+        sort_by: "vote_count.desc",
+        "vote_count.gte": VOTI_MINIMI,
+        "release_date.lte": oggi,
+      });
+
+      for (const film of dati.results) {
+        ids.add(film.id);
+      }
+      raccoltiPerGenere += dati.results.length;
+      await pausa(PAUSA_MS);
+    }
+
+    console.log(`   ${nome}: ${raccoltiPerGenere} candidati`);
   }
 
-  return ids;
+  return [...ids];
 }
 
 async function scaricaFilm(ids: number[]): Promise<{ film: IFilm[]; scartati: number }> {
@@ -94,9 +126,9 @@ async function importa() {
 
   await connectDB();
 
-  console.log(`📥 Raccolgo gli id da ${PAGINE} pagine di /movie/popular...`);
+  console.log(`📥 Raccolgo gli id genere per genere...`);
   const ids = await raccogliIds();
-  console.log(`   ${ids.length} id raccolti`);
+  console.log(`   ${ids.length} film distinti raccolti`);
 
   console.log("🎬 Scarico i dettagli...");
   const { film, scartati } = await scaricaFilm(ids);
