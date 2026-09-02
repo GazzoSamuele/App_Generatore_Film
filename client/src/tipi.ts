@@ -11,3 +11,10 @@ export interface Raccomandazione {
   motivi: string[];
   punteggio: number;
 }
+
+export interface UtenteRiassunto {
+  _id: string;
+  nome: string;
+  email: string;
+  generiPreferiti: string[];
+}

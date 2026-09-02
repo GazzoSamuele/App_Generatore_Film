@@ -5,6 +5,9 @@ import { Film } from "../models/Film.js";
 
 const VALUTAZIONE_MIN = 1;
 const VALUTAZIONE_MAX = 5;
+const NOME_MAX = 60;
+const EMAIL_VALIDA = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CODICE_DUPLICATO_MONGO = 11000;
 
 export async function listaUtenti(_req: Request, res: Response) {
   try {
@@ -12,6 +15,57 @@ export async function listaUtenti(_req: Request, res: Response) {
     res.json(utenti);
   } catch (errore) {
     console.error("Errore nel recupero utenti:", errore);
+    res.status(500).json({ errore: "Errore interno del server" });
+  }
+}
+
+export async function creaUtente(req: Request, res: Response) {
+  try {
+    const { nome, email } = req.body;
+
+    if (typeof nome !== "string" || nome.trim().length === 0) {
+      res.status(400).json({ errore: "nome obbligatorio" });
+      return;
+    }
+
+    const nomePulito = nome.trim();
+    if (nomePulito.length > NOME_MAX) {
+      res.status(400).json({ errore: `nome troppo lungo (massimo ${NOME_MAX} caratteri)` });
+      return;
+    }
+
+    if (typeof email !== "string" || !EMAIL_VALIDA.test(email.trim())) {
+      res.status(400).json({ errore: "email non valida" });
+      return;
+    }
+
+    const emailPulita = email.trim().toLowerCase();
+
+    const giaRegistrata = await Utente.exists({ email: emailPulita });
+    if (giaRegistrata) {
+      res.status(409).json({ errore: "Email già registrata" });
+      return;
+    }
+
+    const utente = await Utente.create({ nome: nomePulito, email: emailPulita });
+
+    res.status(201).json({
+      _id: String(utente._id),
+      nome: utente.nome,
+      email: utente.email,
+      generiPreferiti: utente.generiPreferiti,
+    });
+  } catch (errore) {
+    if (
+      errore !== null &&
+      typeof errore === "object" &&
+      (errore as { code?: number }).code === CODICE_DUPLICATO_MONGO
+    ) {
+      res.status(409).json({ errore: "Email già registrata" });
+      return;
+    }
+
+    console.error("Errore nella creazione dell'utente:", errore);
     res.status(500).json({ errore: "Errore interno del server" });
   }
 }

@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
-import { UTENTE_ID } from "../config";
+import { leggiErrore } from "../api";
 
 interface Props {
+  utenteId: string;
   onSalvato: () => void;
+  onIndietro: () => void;
+  onUtenteNonValido: () => void;
 }
 
-function Preferenze({ onSalvato }: Props) {
-  const [generi, setGeneri] = useState<{ genere: string; quanti: number }[]>([])  
+function Preferenze({ utenteId, onSalvato, onIndietro, onUtenteNonValido }: Props) {
+  const [generi, setGeneri] = useState<{ genere: string; quanti: number }[]>([])
   const [selezionati, setSelezionati] = useState<string[]>([]);
   const [inInvio, setInInvio] = useState(false);
+  const [errore, setErrore] = useState<string | null>(null);
 
   function alterna(genere: string) {
     setSelezionati((precedenti) =>
@@ -21,27 +25,44 @@ function Preferenze({ onSalvato }: Props) {
   async function caricaGeneri() {
     try{
         const risposta = await fetch(`/api/generi`);
-        if (!risposta.ok) throw new Error(`Errore nel caricamento dei generi`);
+        if (!risposta.ok) {
+          throw new Error(await leggiErrore(risposta, `Errore ${risposta.status}`));
+        }
         const dati = await risposta.json();
         setGeneri(dati)
+        setErrore(null);
     } catch (errore) {
         console.error("Errore nel caricamento dei generi:", errore);
+        setErrore("Non riesco a caricare i generi. Controlla che il server sia avviato.");
     }
   }
 
   async function salva() {
     try{
         setInInvio(true);
-        const risposta = await fetch(`/api/utenti/${UTENTE_ID}/preferenze`, {
+        setErrore(null);
+        const risposta = await fetch(`/api/utenti/${utenteId}/preferenze`, {
             method: "PUT",
             headers: { "Content-Type": "application/json"},
             body: JSON.stringify({ generiPreferiti: selezionati})
         });
 
-        if(!risposta.ok) throw new Error(`Errore ${risposta.status} nel salvataggio delle preferenze`)
+        if (risposta.status === 404) {
+          onUtenteNonValido();
+          return;
+        }
+
+        if (!risposta.ok) {
+          setErrore(
+            await leggiErrore(risposta, `Errore ${risposta.status} nel salvataggio delle preferenze`)
+          );
+          return;
+        }
+
         onSalvato();
     }   catch (errore) {
         console.error("Errore nel salvataggio delle preferenze:", errore);
+        setErrore("Non riesco a contattare il server. Riprova.");
     }   finally {
         setInInvio(false)
     }
@@ -53,10 +74,16 @@ function Preferenze({ onSalvato }: Props) {
 
   return (
     <div className="preferenze">
+      <button type="button" className="lista__indietro" onClick={onIndietro}>
+        Indietro
+      </button>
+
       <h1 className="preferenze__titolo">Cosa ti piace guardare?</h1>
       <p className="preferenze__sottotitolo">
         Scegli i generi che preferisci: li useremo per i primi consigli.
       </p>
+
+      {errore && <p className="preferenze__errore">{errore}</p>}
 
       <div className="preferenze__generi">
         {generi.map((g) => (
