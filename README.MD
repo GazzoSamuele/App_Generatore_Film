@@ -160,7 +160,7 @@ Variabili disponibili:
 
 | Variabile | Obbligatoria | Default | Descrizione |
 |---|:---:|---|---|
-| `PORT` | no | `3000` | Porta su cui ascolta il server Express |
+| `PORT` | no | `3001` | Porta su cui ascolta il server Express |
 | `MONGODB_URI` | **sì** | — | Stringa di connessione MongoDB (es. `mongodb://localhost:27017/moviematch`) |
 | `TMDB_API_KEY` | solo per l'import | — | Chiave API di TMDB, usata da `npm run importa` |
 
@@ -210,7 +210,7 @@ Parametri modificabili in `src/seed/importaTMDB.ts`:
 
 Servono **due terminali**.
 
-Terminale 1 — backend (`http://localhost:3000`):
+Terminale 1 — backend (`http://localhost:3001`):
 
 ```bash
 npm run dev
@@ -224,7 +224,7 @@ npm run dev
 ```
 
 Apri **http://localhost:5173**. Il dev server di Vite inoltra automaticamente tutte le
-chiamate `/api/*` al backend sulla porta 3000 (vedi `client/vite.config.ts`), quindi non
+chiamate `/api/*` al backend sulla porta 3001 (vedi `client/vite.config.ts`), quindi non
 servono configurazioni CORS in sviluppo.
 
 ### Altri comandi

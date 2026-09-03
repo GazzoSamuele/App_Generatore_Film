@@ -12,99 +12,9 @@
   }
 }
 
-.preferenze {
-  @include m.flex-centro(column, v.$spazio-md);
-  min-height: 70svh;
-  text-align: center;
-
-  &__titolo {
-    font-size: clamp(1.8rem, 4vw, 2.6rem);
-    letter-spacing: -0.02em;
-  }
-
-  &__sottotitolo {
-    max-width: 42ch;
-    color: v.$testo-tenue;
-    margin-bottom: v.$spazio-lg;
-  }
-
-  &__generi {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: v.$spazio-sm;
-    max-width: 640px;
-    margin-bottom: v.$spazio-lg;
-  }
-
-  &__salva {
-    @include m.focus-visibile;
-    min-width: 220px;
-    padding: v.$spazio-md v.$spazio-lg;
-    border: 1px solid transparent;
-    border-radius: v.$raggio-lg;
-    background: linear-gradient(135deg, v.$accento, v.$accento-scuro);
-    color: #14151a;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: filter v.$transizione, opacity v.$transizione;
-
-    &:hover:not(:disabled) {
-      filter: brightness(1.08);
-    }
-
-    &:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      background: v.$sfondo-elevato;
-      border-color: v.$bordo;
-      color: v.$testo-fioco;
-    }
-  }
-}
-
-.genere {
-  @include m.focus-visibile;
-  padding: v.$spazio-sm v.$spazio-md;
-  border: 1px solid v.$bordo;
-  border-radius: v.$raggio-lg;
-  background: v.$sfondo-elevato;
-  color: v.$testo-tenue;
-  font-size: 0.9rem;
-  transition: background v.$transizione, border-color v.$transizione,
-    color v.$transizione, transform v.$transizione;
-
-  &:hover {
-    border-color: v.$accento;
-    color: v.$testo;
-    transform: translateY(-2px);
-  }
-
-  &--attivo {
-    background: v.$accento-tenue;
-    border-color: v.$accento;
-    color: v.$accento;
-    font-weight: 600;
-  }
-}
-
-.lista__indietro {
-  @include m.focus-visibile;
-  align-self: flex-start;
-  padding: v.$spazio-sm v.$spazio-md;
-  border: 1px solid v.$bordo;
-  border-radius: v.$raggio-lg;
-  background: v.$sfondo-elevato;
-  color: v.$testo-tenue;
-  font-size: 0.9rem;
-  transition: border-color v.$transizione, color v.$transizione;
-
-  &:hover {
-    border-color: v.$accento;
-    color: v.$testo;
-  }
-}
-
+// ---------------------------------------------------------------------------
+// Splash
+// ---------------------------------------------------------------------------
 .splash {
   @include m.flex-centro(column, v.$spazio-md);
   min-height: 80svh;
@@ -149,6 +59,11 @@
     transition: background v.$transizione, border-color v.$transizione,
       transform v.$transizione;
 
+    @include m.mobile {
+      width: 100%;
+      min-width: 0;
+    }
+
     &:hover {
       background: v.$sfondo-hover;
       border-color: v.$accento;
@@ -170,12 +85,365 @@
       }
     }
   }
+
+  // Mancava: link per tornare alla selezione del profilo.
+  &__cambia-utente {
+    @include m.focus-visibile;
+    margin-top: v.$spazio-sm;
+    padding: v.$spazio-xs;
+    border: none;
+    background: none;
+    color: v.$testo-fioco;
+    font-size: 0.8rem;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: color v.$transizione, text-decoration-color v.$transizione;
+
+    &:hover {
+      color: v.$testo-tenue;
+      text-decoration-color: v.$testo-tenue;
+    }
+  }
 }
 
+// ---------------------------------------------------------------------------
+// Selezione utente — mancava del tutto: nessuna delle classi usate in
+// SelezionaUtente.tsx (.utenti*, .profilo*, .nuovo-profilo*) era definita.
+// ---------------------------------------------------------------------------
+.utenti {
+  @include m.flex-centro(column, v.$spazio-md);
+  min-height: 80svh;
+  text-align: center;
+
+  &__stato {
+    color: v.$testo-tenue;
+  }
+
+  &__titolo {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    letter-spacing: -0.02em;
+  }
+
+  &__sottotitolo {
+    max-width: 42ch;
+    color: v.$testo-tenue;
+    margin-bottom: v.$spazio-lg;
+  }
+
+  &__avviso {
+    max-width: 40ch;
+    padding: v.$spazio-sm v.$spazio-md;
+    border: 1px solid v.$bordo;
+    border-radius: v.$raggio-md;
+    background: v.$sfondo-elevato;
+    color: v.$testo-tenue;
+    font-size: 0.9rem;
+  }
+
+  &__errore {
+    color: v.$negativo;
+    font-size: 0.9rem;
+  }
+
+  &__riprova,
+  &__aggiungi {
+    @include m.focus-visibile;
+    min-width: 220px;
+    padding: v.$spazio-sm v.$spazio-lg;
+    border: 1px solid v.$bordo;
+    border-radius: v.$raggio-lg;
+    background: v.$sfondo-elevato;
+    color: v.$testo;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background v.$transizione, border-color v.$transizione,
+      transform v.$transizione;
+
+    @include m.mobile {
+      width: 100%;
+      min-width: 0;
+    }
+
+    &:hover {
+      background: v.$sfondo-hover;
+      border-color: v.$accento;
+      transform: translateY(-2px);
+    }
+  }
+
+  &__vuoto {
+    color: v.$testo-tenue;
+    font-size: 0.9rem;
+  }
+
+  &__elenco {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: v.$spazio-md;
+    width: 100%;
+    max-width: 640px;
+    margin-bottom: v.$spazio-md;
+
+    @include m.mobile {
+      grid-template-columns: 1fr;
+    }
+
+    li {
+      list-style: none;
+    }
+  }
+}
+
+.profilo {
+  @include m.superficie;
+  @include m.focus-visibile;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: v.$spazio-sm;
+  padding: v.$spazio-lg v.$spazio-md;
+  transition: border-color v.$transizione, transform v.$transizione,
+    box-shadow v.$transizione;
+
+  &:hover {
+    border-color: v.$accento;
+    transform: translateY(-2px);
+    box-shadow: v.$ombra;
+  }
+
+  &__iniziale {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: v.$accento-tenue;
+    color: v.$accento;
+    font-weight: 700;
+    font-size: 1.25rem;
+    @include m.flex-centro;
+  }
+
+  &__nome {
+    color: v.$testo;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  &__generi {
+    color: v.$testo-tenue;
+    font-size: 0.8rem;
+  }
+}
+
+.nuovo-profilo {
+  @include m.superficie;
+  display: flex;
+  flex-direction: column;
+  gap: v.$spazio-sm;
+  width: 100%;
+  max-width: 360px;
+  padding: v.$spazio-lg;
+  text-align: left;
+
+  @include m.mobile {
+    max-width: 100%;
+  }
+
+  &__titolo {
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: v.$spazio-xs;
+  }
+
+  &__campo {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spazio-xs;
+    color: v.$testo-tenue;
+    font-size: 0.85rem;
+    text-align: left;
+
+    input {
+      padding: v.$spazio-sm v.$spazio-md;
+      border: 1px solid v.$bordo;
+      border-radius: v.$raggio-sm;
+      background: v.$sfondo;
+      color: v.$testo;
+      font-size: 0.95rem;
+      transition: border-color v.$transizione;
+
+      &:focus-visible {
+        outline: 2px solid v.$accento;
+        outline-offset: 2px;
+        border-color: v.$accento;
+      }
+    }
+  }
+
+  &__errore {
+    color: v.$negativo;
+    font-size: 0.85rem;
+  }
+
+  &__azioni {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: v.$spazio-sm;
+    margin-top: v.$spazio-xs;
+  }
+
+  &__conferma {
+    @include m.focus-visibile;
+    padding: v.$spazio-sm v.$spazio-lg;
+    border: 1px solid transparent;
+    border-radius: v.$raggio-md;
+    background: linear-gradient(135deg, v.$accento, v.$accento-scuro);
+    color: #14151a;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: filter v.$transizione, opacity v.$transizione;
+
+    &:hover:not(:disabled) {
+      filter: brightness(1.08);
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+
+  &__annulla {
+    @include m.focus-visibile;
+    padding: v.$spazio-sm v.$spazio-lg;
+    border: 1px solid v.$bordo;
+    border-radius: v.$raggio-md;
+    background: transparent;
+    color: v.$testo-tenue;
+    font-size: 0.9rem;
+    transition: border-color v.$transizione, color v.$transizione;
+
+    &:hover {
+      border-color: v.$accento;
+      color: v.$testo;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Preferenze
+// ---------------------------------------------------------------------------
+.preferenze {
+  @include m.flex-centro(column, v.$spazio-md);
+  min-height: 70svh;
+  text-align: center;
+
+  &__titolo {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    letter-spacing: -0.02em;
+  }
+
+  &__sottotitolo {
+    max-width: 42ch;
+    color: v.$testo-tenue;
+    margin-bottom: v.$spazio-lg;
+  }
+
+  &__errore {
+    color: v.$negativo;
+    font-size: 0.9rem;
+  }
+
+  &__generi {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: v.$spazio-sm;
+    max-width: 640px;
+    margin-bottom: v.$spazio-lg;
+  }
+
+  &__salva {
+    @include m.focus-visibile;
+    min-width: 220px;
+    padding: v.$spazio-md v.$spazio-lg;
+    border: 1px solid transparent;
+    border-radius: v.$raggio-lg;
+    background: linear-gradient(135deg, v.$accento, v.$accento-scuro);
+    color: #14151a;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: filter v.$transizione, opacity v.$transizione;
+
+    @include m.mobile {
+      width: 100%;
+      min-width: 0;
+    }
+
+    &:hover:not(:disabled) {
+      filter: brightness(1.08);
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background: v.$sfondo-elevato;
+      border-color: v.$bordo;
+      color: v.$testo-fioco;
+    }
+  }
+}
+
+.genere {
+  @include m.focus-visibile;
+  padding: v.$spazio-sm v.$spazio-md;
+  border: 1px solid v.$bordo;
+  border-radius: v.$raggio-lg;
+  background: v.$sfondo-elevato;
+  color: v.$testo-tenue;
+  font-size: 0.9rem;
+  transition: background v.$transizione, border-color v.$transizione,
+    color v.$transizione, transform v.$transizione;
+
+  &:hover {
+    border-color: v.$accento;
+    color: v.$testo;
+    transform: translateY(-2px);
+  }
+
+  &--attivo {
+    background: v.$accento-tenue;
+    border-color: v.$accento;
+    color: v.$accento;
+    font-weight: 600;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Lista consigli
+// ---------------------------------------------------------------------------
 .lista {
   display: flex;
   flex-direction: column;
   gap: v.$spazio-md;
+
+  &__indietro {
+    @include m.focus-visibile;
+    align-self: flex-start;
+    padding: v.$spazio-sm v.$spazio-md;
+    border: 1px solid v.$bordo;
+    border-radius: v.$raggio-lg;
+    background: v.$sfondo-elevato;
+    color: v.$testo-tenue;
+    font-size: 0.9rem;
+    transition: border-color v.$transizione, color v.$transizione;
+
+    &:hover {
+      border-color: v.$accento;
+      color: v.$testo;
+    }
+  }
 
   &__titolo {
     font-size: clamp(1.6rem, 3.5vw, 2.2rem);
@@ -185,6 +453,12 @@
     color: v.$testo-tenue;
     font-size: 0.95rem;
     margin-bottom: v.$spazio-sm;
+  }
+
+  // Mancava: stile del messaggio di errore mostrato dopo un voto non riuscito.
+  &__errore {
+    color: v.$negativo;
+    font-size: 0.9rem;
   }
 
   &__griglia {
@@ -255,16 +529,38 @@
     font-weight: 600;
   }
 
-  &__azioni button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  &__azioni {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$spazio-sm;
+
+    button {
+      flex: 1;
+      min-width: 120px;
+      padding: v.$spazio-sm;
+      border: 1px solid v.$bordo;
+      border-radius: v.$raggio-sm;
+      background: v.$sfondo-hover;
+      color: v.$testo;
+      font-size: 0.8rem;
+      transition: border-color v.$transizione;
+
+      &:hover:not(:disabled) {
+        border-color: v.$accento;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
   }
-  
+
   &__reasons {
     display: flex;
     flex-direction: column;
     gap: v.$spazio-xs;
-  
+
     li {
       position: relative;
       padding-left: v.$spazio-md;
