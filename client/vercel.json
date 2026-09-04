@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://app-generatore-film.onrender.com/api/:path*" }
+  ]
+}
