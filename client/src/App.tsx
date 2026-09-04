@@ -3,6 +3,7 @@ import Splash from './components/Splash';
 import ListaConsigli from './components/ListaConsigli';
 import Preferenze from './components/Preferenze';
 import SelezionaUtente from './components/SelezionaUtente';
+import EsploraFilm from './components/EsploraFilm';
 import {
   leggiUtente,
   salvaUtente,
@@ -11,7 +12,7 @@ import {
 } from './utenteCorrente';
 import './App.scss'
 
-type Schermata = "splash" | "preferenze" | "consigli";
+type Schermata = "splash" | "preferenze" | "consigli" | "esplora";
 
 function App() {
   const [utente, setUtente] = useState<UtenteCorrente | null>(() => leggiUtente());
@@ -55,6 +56,7 @@ function App() {
           nomeUtente={utente.nome}
           onScegliPerMe={() => setSchermata("consigli")}
           onScegliGeneri={() => setSchermata("preferenze")}
+          onEsplora={() => setSchermata("esplora")}
           onCambiaUtente={cambiaUtente}
         />
       )}
@@ -72,6 +74,9 @@ function App() {
           onIndietro={() => setSchermata("splash")}
           onUtenteNonValido={utenteNonValido}
         />
+      )}
+      {schermata === "esplora" && (
+        <EsploraFilm onIndietro={() => setSchermata("splash")} />
       )}
     </div>
   );

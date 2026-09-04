@@ -586,6 +586,165 @@
   }
 }
 
+// ---------------------------------------------------------------------------
+// Esplora tutti i film
+// ---------------------------------------------------------------------------
+.catalogo {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spazio-md;
+
+  &__titolo {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  }
+
+  &__filtri {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$spazio-sm;
+  }
+
+  &__ricerca,
+  &__select {
+    padding: v.$spazio-sm v.$spazio-md;
+    border: 1px solid v.$bordo;
+    border-radius: v.$raggio-md;
+    background: v.$sfondo-elevato;
+    color: v.$testo;
+    font-size: 0.9rem;
+    transition: border-color v.$transizione;
+
+    &:focus-visible {
+      outline: 2px solid v.$accento;
+      outline-offset: 2px;
+      border-color: v.$accento;
+    }
+  }
+
+  &__ricerca {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  &__stato {
+    color: v.$testo-tenue;
+  }
+
+  &__errore {
+    color: v.$negativo;
+    font-size: 0.9rem;
+  }
+
+  &__vuoto {
+    color: v.$testo-tenue;
+    font-size: 0.9rem;
+  }
+
+  &__griglia {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: v.$spazio-lg;
+
+    @include m.mobile {
+      grid-template-columns: 1fr;
+      gap: v.$spazio-md;
+    }
+  }
+
+  &__paginazione {
+    @include m.flex-centro(row, v.$spazio-md);
+    margin-top: v.$spazio-md;
+
+    button {
+      @include m.focus-visibile;
+      padding: v.$spazio-sm v.$spazio-md;
+      border: 1px solid v.$bordo;
+      border-radius: v.$raggio-md;
+      background: v.$sfondo-elevato;
+      color: v.$testo;
+      font-size: 0.85rem;
+      transition: border-color v.$transizione;
+
+      &:hover:not(:disabled) {
+        border-color: v.$accento;
+      }
+
+      &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+    }
+
+    span {
+      color: v.$testo-tenue;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.catalogo-card {
+  @include m.superficie;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform v.$transizione, border-color v.$transizione,
+    box-shadow v.$transizione;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: v.$accento;
+    box-shadow: v.$ombra-forte;
+  }
+
+  &__poster {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    background: v.$sfondo-hover;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spazio-sm;
+    padding: v.$spazio-md;
+  }
+
+  &__title {
+    font-size: 1.15rem;
+    @include m.troncamento(2);
+  }
+
+  &__info {
+    color: v.$testo-tenue;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+  }
+
+  &__genres {
+    color: v.$accento;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  &__score {
+    padding: v.$spazio-sm;
+    border-radius: v.$raggio-sm;
+    background: v.$accento-tenue;
+    color: v.$testo;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  &__description {
+    color: v.$testo-tenue;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    @include m.troncamento(3);
+  }
+}
+
 @keyframes comparsa {
   from {
     opacity: 0;

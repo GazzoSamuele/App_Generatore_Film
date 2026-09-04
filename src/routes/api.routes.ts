@@ -6,7 +6,7 @@ import {
   aggiungiVisione,
   aggiornaPreferenze,
 } from "../controllers/utentiController.js";
-import { listaGeneri } from "../controllers/filmController.js";
+import { listaGeneri, listaFilm } from "../controllers/filmController.js";
 
 const router = Router();
 
@@ -15,6 +15,7 @@ router.post("/utenti", creaUtente);
 router.get("/raccomandazioni/:utenteId", getRaccomandazioni);
 router.post("/utenti/:utenteId/visioni", aggiungiVisione);
 router.get("/generi", listaGeneri);
+router.get("/film", listaFilm);
 router.put("/utenti/:utenteId/preferenze", aggiornaPreferenze);
 
 export default router;

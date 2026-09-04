@@ -18,3 +18,15 @@ export interface UtenteRiassunto {
   email: string;
   generiPreferiti: string[];
 }
+
+export interface FilmCatalogo {
+  id: string;
+  titolo: string;
+  tipo: "film" | "serie";
+  anno: number;
+  generi: string[];
+  piattaforme: string[];
+  posterUrl: string;
+  votoMedio: number;
+  descrizione: string;
+}

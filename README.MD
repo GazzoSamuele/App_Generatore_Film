@@ -35,8 +35,8 @@ Legenda: ✅ disponibile · 🚧 in lavorazione · 📋 pianificato
 | Stato | Funzionalità |
 |:---:|---|
 | ✅ | Profilo utente con generi preferiti, piattaforme attive e storico delle visioni |
-| 🚧 | **Selezione utente all'avvio**: scelta del profilo tra quelli esistenti, memorizzata nel browser |
-| 🚧 | **Creazione di un nuovo profilo** direttamente dall'interfaccia (nome + email) |
+| ✅ | **Selezione utente all'avvio**: scelta del profilo tra quelli esistenti, memorizzata nel browser |
+| ✅ | **Creazione di un nuovo profilo** direttamente dall'interfaccia (nome + email) |
 | 📋 | Selezione delle piattaforme attive (Netflix, Prime Video, Disney+, …) dall'interfaccia |
 | 📋 | Pagina profilo con storico dei titoli visti e voti assegnati |
 
@@ -71,7 +71,7 @@ Legenda: ✅ disponibile · 🚧 in lavorazione · 📋 pianificato
 | ✅ | Catalogo di esempio incluso (seed locale) |
 | ✅ | **Import da TMDB**: film popolari per 18 generi, con cast, regista, keyword, poster e piattaforme italiane |
 | ✅ | Elenco dei generi disponibili con conteggio dei titoli |
-| 📋 | **Esplora tutti i film**: catalogo sfogliabile con ricerca, filtri e paginazione |
+| ✅ | **Esplora tutti i film**: catalogo sfogliabile con ricerca, filtro genere/tipo e paginazione |
 | 📋 | Pagina di dettaglio del singolo titolo (trama, durata, cast completo) |
 | 📋 | Import delle **serie TV** da TMDB (il modello dati le supporta già) |
 
@@ -81,7 +81,7 @@ Legenda: ✅ disponibile · 🚧 in lavorazione · 📋 pianificato
 |:---:|---|
 | ✅ | Schermata iniziale, selezione generi preferiti, griglia dei consigli |
 | ✅ | Layout responsive, animazioni con supporto a `prefers-reduced-motion` |
-| 🚧 | Messaggi di errore visibili all'utente (non solo in console) |
+| ✅ | Messaggi di errore visibili all'utente (non solo in console) |
 | 📋 | Stato "lista vuota" quando non ci sono più titoli da consigliare |
 | 📋 | Trama e durata nella card del film |
 | 📋 | Tema chiaro / scuro |
@@ -250,12 +250,12 @@ d'errore hanno sempre la forma `{ "errore": "descrizione" }`.
 | Stato | Metodo | Endpoint | Descrizione |
 |:---:|---|---|---|
 | ✅ | `GET` | `/api/utenti` | Elenco dei profili disponibili |
-| 🚧 | `POST` | `/api/utenti` | Crea un nuovo profilo |
+| ✅ | `POST` | `/api/utenti` | Crea un nuovo profilo |
 | ✅ | `GET` | `/api/raccomandazioni/:utenteId` | Consigli personalizzati |
 | ✅ | `POST` | `/api/utenti/:utenteId/visioni` | Registra una visione con voto |
 | ✅ | `PUT` | `/api/utenti/:utenteId/preferenze` | Aggiorna i generi preferiti |
 | ✅ | `GET` | `/api/generi` | Generi presenti a catalogo, con conteggio |
-| 📋 | `GET` | `/api/film` | Catalogo sfogliabile (ricerca, filtri, paginazione) |
+| ✅ | `GET` | `/api/film` | Catalogo sfogliabile (ricerca, filtro genere/tipo, paginazione) |
 | 📋 | `GET` | `/api/film/:id` | Dettaglio di un singolo titolo |
 | 📋 | `PUT` | `/api/utenti/:utenteId/visioni/:filmId` | Modifica il voto di una visione |
 | 📋 | `DELETE` | `/api/utenti/:utenteId/visioni/:filmId` | Rimuove un titolo dallo storico |
@@ -355,6 +355,39 @@ Errori: `400` ID o voto non validi · `404` utente o film inesistente ·
   { "genere": "Dramma", "quanti": 142 },
   { "genere": "Thriller", "quanti": 98 }
 ]
+```
+
+### `GET /api/film`
+
+Query string, tutti i parametri opzionali:
+
+| Parametro | Default | Descrizione |
+|---|:---:|---|
+| `pagina` | `1` | Numero di pagina (parte da 1) |
+| `perPagina` | `20` | Titoli per pagina (massimo 50) |
+| `genere` | — | Filtra per un genere esatto |
+| `tipo` | — | `film` oppure `serie` |
+| `ricerca` | — | Ricerca testuale sul titolo (case-insensitive) |
+
+```json
+{
+  "totale": 143,
+  "pagina": 1,
+  "perPagina": 20,
+  "film": [
+    {
+      "id": "6a7f4ec1c05324d5adec8080",
+      "titolo": "Blade Runner 2049",
+      "tipo": "film",
+      "anno": 2017,
+      "generi": ["Fantascienza", "Dramma"],
+      "piattaforme": ["Netflix"],
+      "posterUrl": "https://image.tmdb.org/t/p/w500/...",
+      "votoMedio": 8.1,
+      "descrizione": "Trent'anni dopo gli eventi del primo film..."
+    }
+  ]
+}
 ```
 
 ---
@@ -469,9 +502,11 @@ App_Generatore_Film/
 │       │   ├── Splash.tsx           # Schermata iniziale
 │       │   ├── Preferenze.tsx       # Scelta dei generi preferiti
 │       │   ├── ListaConsigli.tsx
-│       │   └── Card.tsx             # Card del singolo consiglio
+│       │   ├── Card.tsx             # Card del singolo consiglio
+│       │   └── EsploraFilm.tsx      # Catalogo con ricerca, filtri e paginazione
 │       ├── styles/             # Variabili e mixin SCSS
 │       ├── App.tsx             # Router a stati tra le schermate
+│       ├── api.ts              # Lettura dei messaggi d'errore dell'API
 │       ├── tipi.ts             # Tipi condivisi col backend
 │       ├── utenteCorrente.ts   # Profilo attivo salvato nel browser
 │       └── main.tsx
@@ -485,16 +520,12 @@ App_Generatore_Film/
 
 ## Roadmap
 
-**In lavorazione**
-- [ ] Selezione e creazione del profilo utente dall'interfaccia
-- [ ] Messaggi di errore visibili all'utente
-
 **Prossimi passi**
-- [ ] Schermata "Esplora tutti i film" con ricerca e filtri
+- [ ] Pagina di dettaglio del singolo titolo
 - [ ] Modifica e rimozione delle visioni già registrate
 - [ ] Selezione delle piattaforme attive dall'interfaccia
 - [ ] Voto a stelle 1–5
-- [ ] Trama e durata nella card
+- [ ] Trama e durata nella card della lista consigli
 
 **Più avanti**
 - [ ] Test unitari del motore con Vitest
