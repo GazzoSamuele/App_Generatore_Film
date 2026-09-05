@@ -9,6 +9,12 @@ catalogo importabile da [TMDB](https://www.themoviedb.org/).
 
 ---
 
+<img src="screen-generatore-film-1.png" alt="Home dell'app" width="800">
+<img src="screen-generatore-film-2.png" alt="Sezione consigli film dell'app" width="800">
+
+
+---
+
 ## Indice
 
 - [Funzionalità](#funzionalità)
