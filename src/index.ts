@@ -12,19 +12,24 @@ app.get("/", (req, res) => {
   res.json({ messaggio: "🎬 Movie Recommender API - il server è vivo!" });
 });
 
-app.use("/api", apiRoutes);
-
-async function avvia() {
+app.use("/api", async (req, res, next) => {
   try {
     await connectDB();
-
-    app.listen(PORT, () => {
-      console.log(`🚀 Server in ascolto su http://localhost:${PORT}`);
-    });
+    next();
   } catch (errore) {
-    console.error("❌ Avvio fallito:", errore);
-    process.exit(1);
+    console.error("❌ Database non raggiungibile:", errore);
+    res
+      .status(503)
+      .json({ errore: "Database non raggiungibile, riprova tra poco" });
   }
+});
+
+app.use("/api", apiRoutes);
+
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server in ascolto su http://localhost:${PORT}`);
+  });
 }
 
-avvia();
+export default app;
