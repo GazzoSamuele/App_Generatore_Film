@@ -1,40 +1,67 @@
 import { useEffect, useState } from "react";
 import type { FilmCatalogo } from "../tipi";
 import { leggiErrore } from "../api";
-
-interface Props {
-  onIndietro: () => void;
-}
+import Icona from "./Icona";
+import Poster from "./Poster";
+import SchedaFilm from "./SchedaFilm";
 
 type Stato =
   | { fase: "caricamento" }
   | { fase: "errore"; messaggio: string }
   | { fase: "pronto"; film: FilmCatalogo[]; totale: number; perPagina: number };
 
+type Tipo = "" | "film" | "serie";
+
 const RITARDO_RICERCA_MS = 300;
 
-function EsploraFilm({ onIndietro }: Props) {
+const TIPI: { valore: Tipo; etichetta: string }[] = [
+  { valore: "", etichetta: "Tutti" },
+  { valore: "film", etichetta: "Film" },
+  { valore: "serie", etichetta: "Serie" },
+];
+
+function EsploraFilm() {
   const [ricerca, setRicerca] = useState("");
   const [ricercaAttiva, setRicercaAttiva] = useState("");
   const [genere, setGenere] = useState("");
-  const [tipo, setTipo] = useState<"" | "film" | "serie">("");
+  const [tipo, setTipo] = useState<Tipo>("");
   const [pagina, setPagina] = useState(1);
-  const [generi, setGeneri] = useState<{ genere: string; quanti: number }[]>([]);
+  const [filmAperto, setFilmAperto] = useState<string | null>(null);
+  const [tentativo, setTentativo] = useState(0);
+  const [generi, setGeneri] = useState<{ genere: string; quanti: number }[]>(
+    [],
+  );
   const [stato, setStato] = useState<Stato>({ fase: "caricamento" });
 
-  // Aspetta che l'utente finisca di digitare prima di interrogare il server,
-  // così non parte una richiesta a ogni singolo tasto premuto.
   useEffect(() => {
-    const timer = setTimeout(() => setRicercaAttiva(ricerca.trim()), RITARDO_RICERCA_MS);
+    const timer = setTimeout(() => {
+      setRicercaAttiva(ricerca.trim());
+      setPagina(1);
+    }, RITARDO_RICERCA_MS);
     return () => clearTimeout(timer);
   }, [ricerca]);
 
-  // Cambiare un filtro deve sempre far ripartire dalla prima pagina.
-  useEffect(() => {
+  function scegliGenere(nuovo: string) {
+    setGenere(nuovo);
     setPagina(1);
-  }, [ricercaAttiva, genere, tipo]);
+  }
+
+  function scegliTipo(nuovo: Tipo) {
+    setTipo(nuovo);
+    setPagina(1);
+  }
+
+  function cambiaPagina(nuova: number) {
+    setPagina(nuova);
+    const movimentoRidotto = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    window.scrollTo({ top: 0, behavior: movimentoRidotto ? "auto" : "smooth" });
+  }
 
   useEffect(() => {
+    let attivo = true;
+
     async function carica() {
       setStato({ fase: "caricamento" });
       try {
@@ -45,10 +72,13 @@ function EsploraFilm({ onIndietro }: Props) {
 
         const risposta = await fetch(`/api/film?${parametri}`);
         if (!risposta.ok) {
-          throw new Error(await leggiErrore(risposta, `Errore ${risposta.status}`));
+          throw new Error(
+            await leggiErrore(risposta, `Errore ${risposta.status}`),
+          );
         }
 
         const dati = await risposta.json();
+        if (!attivo) return;
         setStato({
           fase: "pronto",
           film: dati.film,
@@ -57,124 +87,217 @@ function EsploraFilm({ onIndietro }: Props) {
         });
       } catch (errore) {
         console.error("Errore nel caricamento del catalogo:", errore);
-        setStato({
-          fase: "errore",
-          messaggio: "Non riesco a caricare il catalogo. Controlla che il server sia avviato.",
-        });
+        if (attivo) {
+          setStato({
+            fase: "errore",
+            messaggio:
+              "Non riesco a caricare il catalogo: il server potrebbe essere ancora in avvio.",
+          });
+        }
       }
     }
 
     carica();
-  }, [pagina, ricercaAttiva, genere, tipo]);
+    return () => {
+      attivo = false;
+    };
+  }, [pagina, ricercaAttiva, genere, tipo, tentativo]);
 
   useEffect(() => {
+    let attivo = true;
+
     async function caricaGeneri() {
       try {
         const risposta = await fetch("/api/generi");
         if (!risposta.ok) return;
-        setGeneri(await risposta.json());
+        const dati = await risposta.json();
+        if (attivo) setGeneri(dati);
       } catch (errore) {
         console.error("Errore nel caricamento dei generi:", errore);
       }
     }
 
     caricaGeneri();
-  }, []);
+    return () => {
+      attivo = false;
+    };
+  }, [tentativo]);
 
   const totalePagine =
-    stato.fase === "pronto" ? Math.max(1, Math.ceil(stato.totale / stato.perPagina)) : 1;
+    stato.fase === "pronto"
+      ? Math.max(1, Math.ceil(stato.totale / stato.perPagina))
+      : 1;
 
   return (
-    <div className="catalogo">
-      <button type="button" className="lista__indietro" onClick={onIndietro}>
-        Indietro
-      </button>
-
-      <h1 className="catalogo__titolo">Esplora tutti i film</h1>
+    <section className="catalogo">
+      <header className="intro">
+        <p className="occhiello">Catalogo</p>
+        <h1 className="intro__titolo intro__titolo--pagina">Esplora tutto</h1>
+      </header>
 
       <div className="catalogo__filtri">
-        <input
-          type="search"
-          className="catalogo__ricerca"
-          placeholder="Cerca per titolo…"
-          value={ricerca}
-          onChange={(e) => setRicerca(e.target.value)}
-        />
+        <label className="ricerca">
+          <Icona nome="cerca" dimensione={20} className="ricerca__icona" />
+          <span className="visivamente-nascosto">Cerca un titolo</span>
+          <input
+            type="search"
+            className="ricerca__input"
+            placeholder="Cerca un titolo…"
+            value={ricerca}
+            onChange={(e) => setRicerca(e.target.value)}
+          />
+        </label>
 
-        <select
-          className="catalogo__select"
-          value={genere}
-          onChange={(e) => setGenere(e.target.value)}
-        >
-          <option value="">Tutti i generi</option>
-          {generi.map((g) => (
-            <option key={g.genere} value={g.genere}>
-              {g.genere} ({g.quanti})
-            </option>
+        <div className="selettore" role="group" aria-label="Tipo di titolo">
+          {TIPI.map((t) => (
+            <button
+              key={t.etichetta}
+              type="button"
+              className={
+                tipo === t.valore
+                  ? "selettore__voce selettore__voce--attiva"
+                  : "selettore__voce"
+              }
+              aria-pressed={tipo === t.valore}
+              onClick={() => scegliTipo(t.valore)}
+            >
+              {t.etichetta}
+            </button>
           ))}
-        </select>
-
-        <select
-          className="catalogo__select"
-          value={tipo}
-          onChange={(e) => setTipo(e.target.value as "" | "film" | "serie")}
-        >
-          <option value="">Film e serie</option>
-          <option value="film">Solo film</option>
-          <option value="serie">Solo serie</option>
-        </select>
+        </div>
       </div>
 
-      {stato.fase === "caricamento" && <p className="catalogo__stato">Caricamento…</p>}
-      {stato.fase === "errore" && <p className="catalogo__errore">{stato.messaggio}</p>}
+      <div className="catalogo__generi" role="group" aria-label="Genere">
+        <button
+          type="button"
+          className={
+            genere === ""
+              ? "chip chip--filtro chip--attivo"
+              : "chip chip--filtro"
+          }
+          aria-pressed={genere === ""}
+          onClick={() => scegliGenere("")}
+        >
+          Tutti i generi
+        </button>
+        {generi.map((g) => (
+          <button
+            key={g.genere}
+            type="button"
+            className={
+              genere === g.genere
+                ? "chip chip--filtro chip--attivo"
+                : "chip chip--filtro"
+            }
+            aria-pressed={genere === g.genere}
+            onClick={() => scegliGenere(g.genere)}
+          >
+            {g.genere}
+          </button>
+        ))}
+      </div>
+
+      {stato.fase === "caricamento" && <p className="stato">Caricamento…</p>}
+      {stato.fase === "errore" && (
+        <div className="stato stato--errore">
+          <p>{stato.messaggio}</p>
+          <button
+            type="button"
+            className="pulsante pulsante--secondario"
+            onClick={() => setTentativo((t) => t + 1)}
+          >
+            Riprova
+          </button>
+        </div>
+      )}
+
+      {stato.fase === "pronto" && (
+        <p className="catalogo__conteggio meta" aria-live="polite">
+          {stato.totale === 1 ? "1 titolo" : `${stato.totale} titoli`}
+        </p>
+      )}
 
       {stato.fase === "pronto" && stato.film.length === 0 && (
-        <p className="catalogo__vuoto">Nessun titolo trovato con questi filtri.</p>
+        <p className="stato">Nessun titolo trovato con questi filtri.</p>
       )}
 
       {stato.fase === "pronto" && stato.film.length > 0 && (
         <>
           <div className="catalogo__griglia">
             {stato.film.map((f) => (
-              <div key={f.id} className="catalogo-card">
-                <img src={f.posterUrl} alt={f.titolo} className="catalogo-card__poster" />
-                <div className="catalogo-card__content">
-                  <h2 className="catalogo-card__title">{f.titolo}</h2>
-                  <p className="catalogo-card__info">
-                    {f.tipo} · {f.anno} · {f.piattaforme.join(", ") || "Nessuna piattaforma"}
+              <article key={f.id} className="titolo-catalogo">
+                <button
+                  type="button"
+                  className="apri-scheda"
+                  aria-label={`Apri la scheda di ${f.titolo}`}
+                  onClick={() => setFilmAperto(f.id)}
+                >
+                  <Poster
+                    className="titolo-catalogo__poster"
+                    titolo={f.titolo}
+                    posterUrl={f.posterUrl}
+                    etichetta={
+                      <>
+                        <Icona nome="stella" dimensione={11} />
+                        <span className="poster__voto">
+                          {f.votoMedio.toFixed(1)}
+                        </span>
+                      </>
+                    }
+                  />
+                </button>
+
+                <div className="titolo-catalogo__corpo">
+                  <h2 className="titolo-catalogo__titolo">{f.titolo}</h2>
+                  <p className="meta">
+                    <span className="meta__tipo">{f.tipo}</span> · {f.anno}
                   </p>
-                  <p className="catalogo-card__genres">{f.generi.join(", ")}</p>
-                  <p className="catalogo-card__score">Voto medio: {f.votoMedio.toFixed(1)}</p>
-                  {f.descrizione && (
-                    <p className="catalogo-card__description">{f.descrizione}</p>
+                  <p className="titolo-catalogo__generi">
+                    {f.generi.join(", ")}
+                  </p>
+                  {f.piattaforme.length > 0 ? (
+                    <p className="titolo-catalogo__piattaforme meta">
+                      {f.piattaforme.join(" · ")}
+                    </p>
+                  ) : (
+                    <>
+                      <p className="titolo-catalogo__piattaforme meta">
+                        Non disponibile in streaming
+                      </p>
+                    </>
                   )}
                 </div>
-              </div>
+              </article>
             ))}
           </div>
 
-          <div className="catalogo__paginazione">
+          <nav className="paginazione" aria-label="Pagine del catalogo">
             <button
               type="button"
+              className="pulsante pulsante--secondario"
               disabled={pagina <= 1}
-              onClick={() => setPagina((p) => p - 1)}
+              onClick={() => cambiaPagina(pagina - 1)}
             >
               ← Precedente
             </button>
-            <span>
-              Pagina {pagina} di {totalePagine}
+            <span className="paginazione__stato meta">
+              Pagina <strong>{pagina}</strong> di {totalePagine}
             </span>
             <button
               type="button"
+              className="pulsante pulsante--secondario"
               disabled={pagina >= totalePagine}
-              onClick={() => setPagina((p) => p + 1)}
+              onClick={() => cambiaPagina(pagina + 1)}
             >
               Successiva →
             </button>
-          </div>
+          </nav>
         </>
       )}
-    </div>
+      {filmAperto && (
+        <SchedaFilm filmId={filmAperto} onChiudi={() => setFilmAperto(null)} />
+      )}
+    </section>
   );
 }
 

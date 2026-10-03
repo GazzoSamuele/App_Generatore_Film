@@ -1,0 +1,18 @@
+@use "variabili" as v;
+
+// Trasforma una palette di _variabili.scss in custom property CSS.
+@mixin tema($palette) {
+  @each $nome, $valore in $palette {
+    --#{$nome}: #{$valore};
+  }
+}
+
+// Il redesign è il tema predefinito: vale anche se data-tema manca.
+:root,
+[data-tema="redesign"] {
+  @include tema(v.$redesign);
+}
+
+[data-tema="classico"] {
+  @include tema(v.$classico);
+}

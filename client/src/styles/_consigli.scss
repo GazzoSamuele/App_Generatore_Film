@@ -1,0 +1,261 @@
+@use "variabili" as v;
+@use "mixin" as m;
+
+// ---------------------------------------------------------------------------
+// Consiglio in evidenza (il primo della lista)
+// ---------------------------------------------------------------------------
+.evidenza {
+  @include m.superficie;
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 32px;
+  margin-bottom: v.$spazio-xxl;
+  padding: v.$spazio-lg;
+  animation: comparsa 320ms ease both;
+
+  @include m.tablet {
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    gap: v.$spazio-lg;
+  }
+
+  @include m.mobile {
+    grid-template-columns: 1fr;
+    padding: v.$spazio-md;
+  }
+
+  &__poster {
+    align-self: start;
+    border-radius: v.$raggio-md;
+
+    @include m.mobile {
+      max-width: 240px;
+    }
+  }
+
+  &__corpo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+    padding-top: v.$spazio-xs;
+  }
+
+  &__titolo {
+    @include m.display(clamp(2.4rem, 5vw, 4.25rem));
+    margin-top: v.$spazio-xs;
+    overflow-wrap: anywhere;
+  }
+
+  &__punteggi {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: v.$spazio-md v.$spazio-lg;
+    width: 100%;
+    margin-top: v.$spazio-sm + 4;
+  }
+
+  &__piattaforme {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$spazio-sm;
+  }
+
+  &__azioni {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$spazio-sm + 4;
+    margin-top: v.$spazio-md;
+  }
+}
+
+.compatibilita {
+  flex: 1 1 260px;
+  max-width: 620px;
+
+  p {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  &__valore {
+    @include m.display(clamp(2.5rem, 4.5vw, 3.5rem));
+    line-height: 1;
+    color: v.$accento;
+  }
+
+  &__etichetta {
+    color: v.$testo-tenue;
+    font-size: 0.9375rem;
+  }
+
+  &__barra {
+    display: block;
+    height: 6px;
+    margin-top: v.$spazio-sm + 4;
+    overflow: hidden;
+    border-radius: v.$raggio-pill;
+    background: v.$bordo;
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: v.$accento;
+    }
+  }
+}
+
+.voto {
+  flex: none;
+  text-align: right;
+
+  &__valore {
+    display: inline-flex;
+    align-items: center;
+    gap: v.$spazio-sm;
+    @include m.display(clamp(2rem, 3.5vw, 2.75rem));
+    line-height: 1;
+  }
+
+  &__etichetta {
+    margin-top: v.$spazio-xs;
+    color: v.$testo-tenue;
+    font-size: 0.9375rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Griglia degli altri consigli
+// ---------------------------------------------------------------------------
+.consigli__griglia {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 20px;
+
+  @include m.mobile {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: v.$spazio-sm + 4;
+  }
+}
+
+.consiglio {
+  @include m.superficie;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: comparsa 320ms ease both;
+  transition:
+    border-color v.$transizione,
+    transform v.$transizione;
+
+  &:hover {
+    border-color: v.$bordo-tratteggio;
+    transform: translateY(-3px);
+  }
+
+  &__corpo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: v.$spazio-sm;
+    padding: v.$spazio-md v.$spazio-md 20px;
+  }
+
+  &__titolo {
+    font-size: 1.1875rem;
+    font-weight: 700;
+    font-stretch: v.$larghezza-titoletti;
+    line-height: 1.2;
+    @include m.troncamento(2);
+  }
+
+  &__generi {
+    font-size: 0.875rem;
+  }
+
+  &__piattaforme {
+    margin-top: auto;
+    padding-top: v.$spazio-sm + 4;
+    color: v.$testo-fioco;
+    line-height: 1.7;
+    @include m.troncamento(2);
+  }
+
+  &__azioni {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid v.$bordo;
+
+    button {
+      @include m.focus-visibile;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 48px;
+      padding: 0 v.$spazio-sm;
+      border: none;
+      background: transparent;
+      color: v.$testo-tenue;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition:
+        background v.$transizione,
+        color v.$transizione;
+
+      & + button {
+        border-left: 1px solid v.$bordo;
+      }
+
+      &:hover:not(:disabled) {
+        background: v.$superficie-alta;
+        color: v.$testo;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.notifica {
+  position: fixed;
+  right: 0;
+  bottom: v.$spazio-lg;
+  left: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: v.$spazio-md;
+  width: fit-content;
+  max-width: calc(100% - #{2 * v.$spazio-md});
+  margin-inline: auto;
+  padding: v.$spazio-sm v.$spazio-sm v.$spazio-sm (v.$spazio-md + 4);
+  border: 1px solid v.$bordo-forte;
+  border-radius: v.$raggio-md;
+  background: v.$superficie-alta;
+  box-shadow: v.$ombra-forte;
+  animation: comparsa 200ms ease both;
+
+  &__annulla {
+    @include m.focus-visibile;
+    flex: none;
+    padding: (v.$spazio-xs + 2) v.$spazio-md;
+    border: none;
+    border-radius: v.$raggio-sm;
+    background: v.$accento;
+    color: v.$su-accento;
+    font-weight: 700;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}

@@ -1,0 +1,198 @@
+@use "variabili" as v;
+@use "mixin" as m;
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  align-items: center;
+  gap: v.$spazio-xl;
+  margin-bottom: 72px;
+
+  @include m.tablet {
+    grid-template-columns: 1fr;
+    gap: v.$spazio-xxl;
+  }
+
+  @include m.mobile {
+    margin-bottom: v.$spazio-xl + v.$spazio-sm;
+  }
+
+  &__testo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  &__titolo {
+    @include m.display(clamp(3.25rem, 8vw, 6.75rem));
+
+    em {
+      font-style: normal;
+      color: v.$accento;
+    }
+  }
+
+  &__descrizione {
+    max-width: 46ch;
+    margin-top: v.$spazio-sm;
+    color: v.$testo-tenue;
+    font-size: 1.1875rem;
+    line-height: 1.5;
+  }
+
+  &__azioni {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px v.$spazio-lg;
+    margin-top: v.$spazio-md;
+  }
+}
+
+// Le tre carte inclinate a destra dell'hero: i primi tre consigli dell'utente.
+.mazzo {
+  @include m.focus-visibile;
+  position: relative;
+  justify-self: end;
+  width: 100%;
+  max-width: 475px;
+  aspect-ratio: 475 / 400;
+  padding: 0;
+  border: none;
+  border-radius: v.$raggio-lg;
+  background: none;
+
+  @include m.tablet {
+    justify-self: center;
+    max-width: 400px;
+  }
+
+  @include m.mobile {
+    display: none;
+  }
+
+  &__carta {
+    position: absolute;
+    width: 48.5%;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: v.$raggio-lg;
+    box-shadow: v.$ombra-forte;
+    transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    &--sinistra {
+      top: 13%;
+      left: 2%;
+      transform: rotate(-8deg);
+    }
+
+    &--destra {
+      top: 13%;
+      right: 2%;
+      transform: rotate(8deg);
+    }
+
+    &--davanti {
+      top: 0;
+      left: 25.75%;
+    }
+
+    &--vuota {
+      aspect-ratio: 2 / 3;
+      background: v.$superficie-alta;
+    }
+  }
+
+  &:hover {
+    .mazzo__carta--sinistra {
+      transform: translateX(-14px) rotate(-11deg);
+    }
+
+    .mazzo__carta--destra {
+      transform: translateX(14px) rotate(11deg);
+    }
+
+    .mazzo__carta--davanti {
+      transform: translateY(-8px);
+    }
+  }
+}
+
+.scorciatoie {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+
+  @include m.tablet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.scorciatoia {
+  @include m.superficie;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 28px;
+
+  @include m.mobile {
+    padding: v.$spazio-lg v.$spazio-md + 4;
+  }
+
+  &--tratteggiata {
+    border-style: dashed;
+    border-color: v.$bordo-tratteggio;
+    background: transparent;
+  }
+
+  &__icona {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: v.$spazio-sm;
+    border-radius: v.$raggio-md;
+    background: v.$superficie-alta;
+    color: v.$accento;
+  }
+
+  &__titolo {
+    @include m.display(1.875rem);
+    line-height: 1;
+  }
+
+  &__testo {
+    color: v.$testo-tenue;
+    line-height: 1.55;
+  }
+
+  &__generi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$spazio-sm;
+  }
+
+  &__link {
+    @include m.focus-visibile;
+    display: inline-flex;
+    align-items: center;
+    gap: v.$spazio-sm;
+    margin-top: auto;
+    padding: v.$spazio-md 0 0;
+    border: none;
+    background: none;
+    color: v.$accento;
+    font-size: 1.0625rem;
+    font-weight: 600;
+
+    svg {
+      transition: transform v.$transizione;
+    }
+
+    &:hover svg {
+      transform: translateX(3px);
+    }
+  }
+}

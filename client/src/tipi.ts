@@ -15,7 +15,6 @@ export interface Raccomandazione {
 export interface UtenteRiassunto {
   _id: string;
   nome: string;
-  email: string;
   generiPreferiti: string[];
 }
 
@@ -29,4 +28,10 @@ export interface FilmCatalogo {
   posterUrl: string;
   votoMedio: number;
   descrizione: string;
+}
+
+export interface DettaglioFilm extends FilmCatalogo {
+  durataMinuti: number;
+  regista: string;
+  cast: string[];
 }

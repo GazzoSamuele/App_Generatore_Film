@@ -1,85 +1,111 @@
-import { useState } from 'react';
-import Splash from './components/Splash';
-import ListaConsigli from './components/ListaConsigli';
-import Preferenze from './components/Preferenze';
-import SelezionaUtente from './components/SelezionaUtente';
-import EsploraFilm from './components/EsploraFilm';
+import { useCallback, useEffect, useState } from "react";
+import Intestazione, { type Schermata } from "./components/Intestazione";
+import Splash from "./components/Splash";
+import ListaConsigli from "./components/ListaConsigli";
+import Preferenze from "./components/Preferenze";
+import SelezionaUtente from "./components/SelezionaUtente";
+import EsploraFilm from "./components/EsploraFilm";
+import PiePagina from "./components/PiePagina";
 import {
   leggiUtente,
   salvaUtente,
   dimenticaUtente,
+  aggiungiProfilo,
+  rimuoviProfilo,
   type UtenteCorrente,
-} from './utenteCorrente';
-import './App.scss'
-
-type Schermata = "splash" | "preferenze" | "consigli" | "esplora";
+} from "./utenteCorrente";
+import "./App.scss";
 
 function App() {
-  const [utente, setUtente] = useState<UtenteCorrente | null>(() => leggiUtente());
-  const [schermata, setSchermata] = useState<Schermata>("splash");
+  const [utente, setUtente] = useState<UtenteCorrente | null>(() => {
+    const salvato = leggiUtente();
+    if (salvato) aggiungiProfilo(salvato.id);
+    return salvato;
+  });
+  const [schermata, setSchermata] = useState<Schermata>("home");
   const [avviso, setAvviso] = useState<string | null>(null);
 
-  function selezionaUtente(scelto: UtenteCorrente) {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [schermata, utente]);
+
+  function selezionaUtente(scelto: UtenteCorrente, appenaCreato: boolean) {
     salvaUtente(scelto);
     setUtente(scelto);
     setAvviso(null);
-    setSchermata("splash");
+    setSchermata(appenaCreato ? "preferenze" : "home");
   }
 
   function cambiaUtente() {
     dimenticaUtente();
     setUtente(null);
-    setSchermata("splash");
+    setSchermata("home");
   }
 
-  // Il profilo salvato nel browser non esiste più sul server: succede dopo un
-  // "npm run seed", che ricrea gli utenti con id nuovi.
-  function utenteNonValido() {
+  const utenteNonValido = useCallback(() => {
+    const salvato = leggiUtente();
+    if (salvato) rimuoviProfilo(salvato.id);
     dimenticaUtente();
     setUtente(null);
-    setSchermata("splash");
-    setAvviso("Il profilo salvato non esiste più sul server. Scegline uno dall'elenco.");
-  }
+    setSchermata("home");
+    setAvviso(
+      "Il profilo salvato non esiste più sul server. Scegline uno dall'elenco.",
+    );
+  }, []);
 
   if (!utente) {
     return (
-      <div className="App">
-        <SelezionaUtente onSelezionato={selezionaUtente} messaggioIniziale={avviso} />
-      </div>
+      <>
+        <Intestazione utente={null} />
+        <main className="pagina">
+          <SelezionaUtente
+            onSelezionato={selezionaUtente}
+            messaggioIniziale={avviso}
+          />
+        </main>
+        <PiePagina />
+      </>
     );
   }
 
   return (
-    <div className="App">
-      {schermata === "splash" && (
-        <Splash
-          nomeUtente={utente.nome}
-          onScegliPerMe={() => setSchermata("consigli")}
-          onScegliGeneri={() => setSchermata("preferenze")}
-          onEsplora={() => setSchermata("esplora")}
-          onCambiaUtente={cambiaUtente}
-        />
-      )}
-      {schermata === "consigli" && (
-        <ListaConsigli
-          utenteId={utente.id}
-          onIndietro={() => setSchermata("splash")}
-          onUtenteNonValido={utenteNonValido}
-        />
-      )}
-      {schermata === "preferenze" && (
-        <Preferenze
-          utenteId={utente.id}
-          onSalvato={() => setSchermata("consigli")}
-          onIndietro={() => setSchermata("splash")}
-          onUtenteNonValido={utenteNonValido}
-        />
-      )}
-      {schermata === "esplora" && (
-        <EsploraFilm onIndietro={() => setSchermata("splash")} />
-      )}
-    </div>
+    <>
+      <Intestazione
+        utente={utente}
+        schermata={schermata}
+        onNaviga={setSchermata}
+        onCambiaUtente={cambiaUtente}
+      />
+      <main className="pagina">
+        {schermata === "home" && (
+          <Splash
+            utenteId={utente.id}
+            nomeUtente={utente.nome}
+            onScegliPerMe={() => setSchermata("consigli")}
+            onScegliGeneri={() => setSchermata("preferenze")}
+            onEsplora={() => setSchermata("esplora")}
+            onUtenteNonValido={utenteNonValido}
+          />
+        )}
+        {schermata === "consigli" && (
+          <ListaConsigli
+            utenteId={utente.id}
+            nomeUtente={utente.nome}
+            onUtenteNonValido={utenteNonValido}
+          />
+        )}
+        {schermata === "preferenze" && (
+          <Preferenze
+            utenteId={utente.id}
+            onSalvato={() => setSchermata("consigli")}
+            onUtenteNonValido={utenteNonValido}
+          />
+        )}
+        {schermata === "esplora" && <EsploraFilm />}
+      </main>
+      <PiePagina />
+    </>
   );
 }
 
-export default App
+export default App;

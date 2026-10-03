@@ -9,7 +9,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "seed": "tsx src/seed/seedCatalogo.ts",
-    "importa": "tsx src/seed/importaTMDB.ts"
+    "importa": "tsx src/seed/importaTMDB.ts",
+    "importa:serie": "tsx src/seed/importaTMDB.ts serie",
+    "migrazione": "tsx src/seed/migrazione.ts"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +19,7 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
     "mongoose": "^9.9.1"
   },
   "devDependencies": {

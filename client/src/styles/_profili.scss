@@ -1,0 +1,141 @@
+@use "variabili" as v;
+@use "mixin" as m;
+
+.profili {
+  max-width: v.$larghezza-stretta;
+  margin-inline: auto;
+
+  &__griglia {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: v.$spazio-xl + v.$spazio-sm;
+
+    @include m.tablet {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @include m.mobile {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: v.$spazio-sm + 4;
+    }
+
+    > li {
+      display: flex;
+    }
+  }
+}
+
+.profilo {
+  @include m.focus-visibile;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  padding: 14px 14px 20px;
+  border: 1px solid v.$bordo;
+  border-radius: v.$raggio-lg;
+  background: v.$superficie;
+  color: v.$testo;
+  text-align: left;
+  transition: border-color v.$transizione, transform v.$transizione;
+
+  &:hover {
+    border-color: v.$bordo-tratteggio;
+    transform: translateY(-3px);
+  }
+
+  &__avatar {
+    width: 100%;
+    aspect-ratio: 1;
+    margin-bottom: 10px;
+    border-radius: v.$raggio-md;
+    font-size: clamp(3.25rem, 7.5vw, 5.75rem);
+  }
+
+  &__nome {
+    padding-inline: 6px;
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-stretch: v.$larghezza-titoletti;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  &__generi {
+    padding-inline: 6px;
+    @include m.mono(0.75rem);
+    color: v.$testo-fioco;
+    line-height: 1.6;
+  }
+
+  &--nuovo {
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 220px;
+    border: 1px dashed v.$bordo-tratteggio;
+    background: transparent;
+
+    &:hover {
+      border-color: v.$accento;
+    }
+
+    .profilo__nome {
+      font-size: 1.125rem;
+      font-weight: 600;
+      font-stretch: 100%;
+    }
+  }
+
+  &__piu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: v.$superficie-alta;
+    color: v.$accento;
+  }
+}
+
+.nuovo-profilo {
+  @include m.superficie;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 705px;
+  padding: 32px;
+  animation: comparsa 260ms ease both;
+
+  @include m.mobile {
+    padding: v.$spazio-lg v.$spazio-md;
+  }
+
+  &__titolo {
+    @include m.display(1.875rem);
+    line-height: 1;
+  }
+
+  &__campi {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: v.$spazio-md;
+
+    @include m.mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__azioni {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$spazio-sm + 4;
+  }
+
+  .errore {
+    margin: 0;
+  }
+}

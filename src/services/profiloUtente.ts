@@ -5,7 +5,6 @@ export interface ProfiloGusti {
   tag: Map<string, number>;
   titoliAmati: IFilm[];
   nomi: Map<string, number>;
-
 }
 
 export interface VisioneRisolta {
@@ -25,7 +24,11 @@ export function pesoDaValutazione(valutazione: number): number {
   return valutazione - VALUTAZIONE_NEUTRA;
 }
 
-function accumula(mappa: Map<string, number>, chiave: string, valore: number): void {
+function accumula(
+  mappa: Map<string, number>,
+  chiave: string,
+  valore: number,
+): void {
   mappa.set(chiave, (mappa.get(chiave) ?? 0) + valore);
 }
 
@@ -41,7 +44,10 @@ function normalizza(mappa: Map<string, number>): void {
   }
 }
 
-export function fattoreDecadimento(dataVisione: Date, adesso: Date = new Date()): number {
+export function fattoreDecadimento(
+  dataVisione: Date,
+  adesso: Date = new Date(),
+): number {
   const millisecondi = adesso.getTime() - dataVisione.getTime();
   const giorni = Math.max(0, millisecondi / (1000 * 60 * 60 * 24));
   return 0.5 ** (giorni / EMIVITA_GIORNI);
@@ -49,7 +55,7 @@ export function fattoreDecadimento(dataVisione: Date, adesso: Date = new Date())
 
 export function costruisciProfilo(
   generiPreferiti: string[],
-  visioni: VisioneRisolta[]
+  visioni: VisioneRisolta[],
 ): ProfiloGusti {
   const nomi = new Map<string, number>();
   const generi = new Map<string, number>();
@@ -61,7 +67,8 @@ export function costruisciProfilo(
   }
 
   for (const { film, valutazione, dataVisione } of visioni) {
-    const peso = pesoDaValutazione(valutazione) * fattoreDecadimento(dataVisione);
+    const peso =
+      pesoDaValutazione(valutazione) * fattoreDecadimento(dataVisione);
 
     if (peso === 0) continue;
 
@@ -69,11 +76,11 @@ export function costruisciProfilo(
       accumula(generi, genere, peso);
     }
 
-    accumula(nomi, film.regista, peso);
+    if (film.regista) accumula(nomi, film.regista, peso);
 
     for (const nome of film.cast) {
       accumula(nomi, nome, peso * PESO_ATTORE_RELATIVO);
-    } 
+    }
     for (const etichetta of film.tag) {
       accumula(tag, etichetta, peso * PESO_TAG_RELATIVO);
     }

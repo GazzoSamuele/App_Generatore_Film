@@ -1,0 +1,110 @@
+@use "variabili" as v;
+@use "mixin" as m;
+
+.preferenze {
+  max-width: v.$larghezza-stretta;
+  margin-inline: auto;
+
+  &__generi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$spazio-sm + 4;
+  }
+}
+
+.genere {
+  @include m.focus-visibile;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 20px;
+  border: 1px solid v.$bordo-forte;
+  border-radius: v.$raggio-pill;
+  background: v.$superficie;
+  color: v.$testo;
+  font-size: 1.125rem;
+  font-weight: 600;
+  transition:
+    background v.$transizione,
+    border-color v.$transizione,
+    color v.$transizione;
+
+  @include m.mobile {
+    min-height: 44px;
+    padding: 0 16px;
+    font-size: 1rem;
+  }
+
+  &:hover {
+    border-color: v.$bordo-tratteggio;
+    background: v.$superficie-alta;
+  }
+
+  &__conteggio {
+    @include m.mono(0.75rem);
+    color: v.$testo-fioco;
+  }
+
+  &__spunta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: v.$su-accento;
+    color: v.$accento;
+  }
+
+  &--attivo,
+  &--attivo:hover {
+    padding-left: 12px;
+    border-color: v.$accento;
+    background: v.$accento;
+    color: v.$su-accento;
+
+    .genere__conteggio {
+      color: v.$su-accento;
+      opacity: 0.7;
+    }
+  }
+}
+
+// Barra "N generi selezionati — Salva". È sticky: mentre scorri i generi resta attaccata
+// in fondo allo schermo; arrivati alla fine della sezione si ferma sopra il footer.
+.barra-salva {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  margin-top: v.$spazio-xl;
+  border-top: 1px solid v.$bordo;
+  background: v.$sfondo;
+
+  &__interno {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: v.$spazio-md;
+    padding: 18px 0;
+
+    @include m.mobile {
+      padding: v.$spazio-sm + 4 0;
+
+      .pulsante--grande {
+        min-height: 48px;
+        padding: 0 18px;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  &__conteggio {
+    font-size: 1.0625rem;
+    font-weight: 600;
+
+    @include m.mobile {
+      font-size: 0.9375rem;
+    }
+  }
+}

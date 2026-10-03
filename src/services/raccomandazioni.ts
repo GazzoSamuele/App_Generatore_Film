@@ -6,14 +6,17 @@ import {
   type VisioneRisolta,
 } from "./profiloUtente.js";
 
-const PESO_GENERI = 0.40;
+const PESO_GENERI = 0.4;
 const PESO_TAG = 0.25;
-const PESO_QUALITA = 0.20;
+const PESO_QUALITA = 0.2;
 const PESO_PERSONE = 0.15;
 const PENALITA_PIATTAFORMA = 0.15;
 const MAX_PER_GENERE = 4;
 
-function affinitaMedia(etichette: string[], profilo: Map<string, number>): number {
+function affinitaMedia(
+  etichette: string[],
+  profilo: Map<string, number>,
+): number {
   if (etichette.length === 0) return 0;
 
   let somma = 0;
@@ -59,7 +62,8 @@ function generaMotivi(film: IFilm, profilo: ProfiloGusti): string[] {
 
   const amiUnDeterminatoRegista = profilo.nomi.get(film.regista) ?? 0;
   if (amiUnDeterminatoRegista > 0.2) {
-    motivi.push(`Ti piace il regista ${film.regista}`);
+    const ruolo = film.tipo === "serie" ? "l'ideatore" : "il regista";
+    motivi.push(`Ti piace ${ruolo} ${film.regista}`);
   }
 
   for (const attore of film.cast) {
@@ -71,7 +75,7 @@ function generaMotivi(film: IFilm, profilo: ProfiloGusti): string[] {
   }
 
   if (motivi.length === 0) {
-    motivi.push("Perché sì");
+    motivi.push("Qualcosa di diverso dai tuoi soliti generi");
   }
 
   return motivi;
@@ -80,18 +84,24 @@ function generaMotivi(film: IFilm, profilo: ProfiloGusti): string[] {
 export function calcolaPunteggio(
   film: IFilm,
   profilo: ProfiloGusti,
-  piattaformeAttive: string[]
+  piattaformeAttive: string[],
 ): number {
   const affinitaGeneri = affinitaMedia(film.generi, profilo.generi);
   const affinitaTag = affinitaMedia(film.tag, profilo.tag);
   const qualita = film.votoMedio / 10;
-  const affinitaPersone = affinitaMedia([film.regista, ...film.cast], profilo.nomi);
+  const affinitaPersone = affinitaMedia(
+    [film.regista, ...film.cast],
+    profilo.nomi,
+  );
 
   let punteggio =
-    affinitaGeneri * PESO_GENERI + affinitaTag * PESO_TAG + qualita * PESO_QUALITA + affinitaPersone * PESO_PERSONE;
+    affinitaGeneri * PESO_GENERI +
+    affinitaTag * PESO_TAG +
+    qualita * PESO_QUALITA +
+    affinitaPersone * PESO_PERSONE;
 
   const disponibileSuUnaAttiva = film.piattaforme.some((p) =>
-    piattaformeAttive.includes(p)
+    piattaformeAttive.includes(p),
   );
 
   if (piattaformeAttive.length > 0 && !disponibileSuUnaAttiva) {
@@ -106,7 +116,10 @@ function compatibilitaDa(punteggio: number): number {
   return Math.round(Math.max(0, Math.min(1, normalizzato)) * 100);
 }
 
-function applicaVarieta<T extends { film: IFilm }>(classifica: T[], limite: number): T[] {
+function applicaVarieta<T extends { film: IFilm }>(
+  classifica: T[],
+  limite: number,
+): T[] {
   const conteggioGeneri = new Map<string, number>();
   const selezionati: T[] = [];
 
@@ -114,10 +127,12 @@ function applicaVarieta<T extends { film: IFilm }>(classifica: T[], limite: numb
     if (selezionati.length === limite) break;
 
     const generi =
-      candidato.film.generi.length > 0 ? candidato.film.generi : ["Sconosciuto"];
+      candidato.film.generi.length > 0
+        ? candidato.film.generi
+        : ["Sconosciuto"];
 
     const saturo = generi.some(
-      (g) => (conteggioGeneri.get(g) ?? 0) >= MAX_PER_GENERE
+      (g) => (conteggioGeneri.get(g) ?? 0) >= MAX_PER_GENERE,
     );
 
     if (!saturo) {
@@ -163,7 +178,11 @@ export async function generaRaccomandazioni(utenteId: string, limite = 8) {
 
   const classifica = candidati
     .map((film) => {
-      const punteggio = calcolaPunteggio(film, profilo, utente.piattaformeAttive);
+      const punteggio = calcolaPunteggio(
+        film,
+        profilo,
+        utente.piattaformeAttive,
+      );
       return {
         film,
         punteggio,

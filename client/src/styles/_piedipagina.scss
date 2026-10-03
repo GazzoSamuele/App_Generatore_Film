@@ -1,0 +1,73 @@
+@use "variabili" as v;
+@use "mixin" as m;
+
+.pie-pagina {
+  border-top: 1px solid v.$bordo;
+
+  &__interno {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: v.$spazio-lg;
+    max-width: v.$larghezza-max + 2 * v.$spazio-lg;
+    margin-inline: auto;
+    padding: v.$spazio-xl v.$spazio-lg;
+
+    @include m.mobile {
+      padding: v.$spazio-lg v.$spazio-md;
+    }
+  }
+
+  &__logo-tmdb {
+    width: auto;
+    height: 12px;
+    margin-bottom: v.$spazio-xs;
+  }
+
+  &__marchio {
+    display: inline-flex;
+    align-items: center;
+    gap: v.$spazio-sm;
+    font-family: v.$font-titoli;
+    font-size: 1.125rem;
+    font-weight: 800;
+    font-stretch: v.$larghezza-display;
+    text-transform: uppercase;
+  }
+
+  &__icona {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    background: v.$accento;
+    color: v.$su-accento;
+  }
+
+  &__crediti {
+    display: flex;
+    flex-direction: column;
+    gap: v.$spazio-xs;
+    max-width: 62ch;
+    color: v.$testo-fioco;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+
+    a {
+      @include m.focus-visibile;
+      color: v.$testo-tenue;
+      text-underline-offset: 3px;
+
+      &:hover {
+        color: v.$accento;
+      }
+    }
+  }
+}
+
+body:has(.profili, .preferenze) .pie-pagina__interno {
+  max-width: v.$larghezza-stretta + 2 * v.$spazio-lg;
+}

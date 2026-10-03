@@ -1,39 +1,134 @@
-$sfondo: #0f1014;
-$sfondo-elevato: #191b22;
-$sfondo-hover: #22252f;
+// Redesign: colori campionati dai mockup in /redesign.
+$redesign: (
+  "sfondo": #0e0d0c,
+  "superficie": #1a1816,
+  "superficie-alta": #24211e,
+  "bordo": #2a2724,
+  "bordo-forte": #3a3631,
+  "bordo-tratteggio": #4a453f,
+  "testo": #f3eee6,
+  "testo-tenue": #a8a196,
+  "testo-fioco": #8a8379,
+  "testo-spento": #6a645c,
+  "accento": #ff5a36,
+  "accento-hover": #ff7352,
+  "accento-scuro": #e0451f,
+  "accento-tenue": rgba(255, 90, 54, 0.14),
+  "su-accento": #1a0a05,
+  "velo": rgba(14, 13, 12, 0.78),
+  "positivo": #3ddc97,
+  "negativo": #ff6b6b,
+);
 
-$testo: #e9eaee;
-$testo-tenue: #9aa1ae;
-$testo-fioco: #6b7280;
+// Classico: la palette di prima del redesign, con i token nuovi completati.
+$classico: (
+  "sfondo": #0f1014,
+  "superficie": #191b22,
+  "superficie-alta": #22252f,
+  "bordo": #272a34,
+  "bordo-forte": #343844,
+  "bordo-tratteggio": #3f4452,
+  "testo": #e9eaee,
+  "testo-tenue": #9aa1ae,
+  "testo-fioco": #868e9c,
+  "testo-spento": #4f5562,
+  "accento": #ffb703,
+  "accento-hover": #ffc53d,
+  "accento-scuro": #d99500,
+  "accento-tenue": rgba(255, 183, 3, 0.12),
+  "su-accento": #14151a,
+  "velo": rgba(15, 16, 20, 0.78),
+  "positivo": #3ddc97,
+  "negativo": #ff6b6b,
+);
 
-$bordo: #272a34;
+// Sfondi dei poster segnaposto
+$colori-poster: (
+  #5a2a1a,
+  #6b2420,
+  #1f4e5a,
+  #23312a,
+  #6b4a1e,
+  #4a2a5c,
+  #3d2420,
+  #5c4a2a
+);
+$colori-avatar: (#2e5e6b, #6b4a1e, #4a2a5c, #23312a);
 
-$accento: #ffb703;
-$accento-scuro: #d99500;
-$accento-tenue: rgba(255, 183, 3, 0.12);
+// ---------------------------------------------------------------------------
+// Token semantici: da usare nei componenti al posto dei colori diretti.
+// ---------------------------------------------------------------------------
+$sfondo: var(--sfondo);
+$superficie: var(--superficie);
+$superficie-alta: var(--superficie-alta);
+$bordo: var(--bordo);
+$bordo-forte: var(--bordo-forte);
+$bordo-tratteggio: var(--bordo-tratteggio);
 
-$positivo: #3ddc97;
-$negativo: #ff6b6b;
+$testo: var(--testo);
+$testo-tenue: var(--testo-tenue);
+$testo-fioco: var(--testo-fioco);
+$testo-spento: var(--testo-spento);
 
-$font-testo: "Segoe UI", system-ui, -apple-system, sans-serif;
-$font-titoli: "Segoe UI", system-ui, -apple-system, sans-serif;
+$accento: var(--accento);
+$accento-hover: var(--accento-hover);
+$accento-scuro: var(--accento-scuro);
+$accento-tenue: var(--accento-tenue);
+$su-accento: var(--su-accento);
+$velo: var(--velo);
 
+$positivo: var(--positivo);
+$negativo: var(--negativo);
+
+$sfondo-elevato: $superficie;
+$sfondo-hover: $superficie-alta;
+
+// ---------------------------------------------------------------------------
+// Tipografia
+// ---------------------------------------------------------------------------
+$font-testo:
+  "Bricolage Grotesque",
+  "Segoe UI",
+  system-ui,
+  -apple-system,
+  sans-serif;
+$font-titoli: $font-testo;
+$font-mono:
+  "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+$larghezza-display: 75%;
+$larghezza-titoletti: 87.5%;
+
+// ---------------------------------------------------------------------------
+// Spazi, raggi, ombre
+// ---------------------------------------------------------------------------
 $spazio-xs: 4px;
 $spazio-sm: 8px;
 $spazio-md: 16px;
 $spazio-lg: 24px;
 $spazio-xl: 40px;
 $spazio-xxl: 64px;
+$spazio-xxxl: 88px;
 
 $raggio-sm: 6px;
-$raggio-md: 12px;
-$raggio-lg: 20px;
+$raggio-md: 10px;
+$raggio-lg: 14px;
+$raggio-pill: 999px;
 
-$ombra: 0 4px 6px -2px rgba(0, 0, 0, 0.3), 0 12px 24px -6px rgba(0, 0, 0, 0.45);
-$ombra-forte: 0 8px 12px -4px rgba(0, 0, 0, 0.4), 0 20px 40px -8px rgba(0, 0, 0, 0.6);
+$ombra:
+  0 4px 6px -2px rgba(0, 0, 0, 0.3),
+  0 12px 24px -6px rgba(0, 0, 0, 0.45);
+$ombra-forte:
+  0 8px 12px -4px rgba(0, 0, 0, 0.4),
+  0 20px 40px -8px rgba(0, 0, 0, 0.6);
 
 $transizione: 200ms ease;
 
+// ---------------------------------------------------------------------------
+// Layout
+// ---------------------------------------------------------------------------
 $bp-mobile: 640px;
 $bp-tablet: 1024px;
-$larghezza-max: 1200px;
+$larghezza-max: 1160px;
+$larghezza-stretta: 960px;
+$altezza-intestazione: 76px;

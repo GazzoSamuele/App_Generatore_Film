@@ -1,4 +1,5 @@
 @use "./styles/variabili" as v;
+@use "./styles/temi";
 
 *,
 *::before,
@@ -23,7 +24,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+// Colonna: intestazione, pagina, footer. La pagina (.pagina in _comuni.scss) prende
+// tutto lo spazio libero, così il footer resta in fondo anche quando il contenuto è corto.
 #root {
+  display: flex;
+  flex-direction: column;
   min-height: 100svh;
 }
 
@@ -32,8 +37,8 @@ h2,
 h3 {
   margin: 0;
   font-family: v.$font-titoli;
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: 700;
+  line-height: 1.15;
   color: v.$testo;
 }
 
@@ -52,12 +57,23 @@ img {
   max-width: 100%;
 }
 
-button {
+button,
+input,
+select {
   font-family: inherit;
   font-size: inherit;
+  color: inherit;
+}
+
+button {
   cursor: pointer;
 }
 
 a {
   color: v.$accento;
+}
+
+::selection {
+  background: v.$accento;
+  color: v.$su-accento;
 }

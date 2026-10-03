@@ -1,0 +1,122 @@
+@use "variabili" as v;
+@use "mixin" as m;
+
+.scheda {
+  width: min(880px, calc(100% - #{2 * v.$spazio-md}));
+  max-height: calc(100svh - #{2 * v.$spazio-lg});
+  padding: 0;
+  border: 1px solid v.$bordo;
+  border-radius: v.$raggio-lg;
+  background: v.$superficie;
+  color: v.$testo;
+  box-shadow: v.$ombra-forte;
+
+  &::backdrop {
+    background: var(--velo, rgba(0, 0, 0, 0.75));
+  }
+
+  &__contenuto {
+    position: relative;
+    padding: v.$spazio-xl;
+
+    @include m.mobile {
+      padding: v.$spazio-lg v.$spazio-md;
+    }
+  }
+
+  &__chiudi {
+    @include m.focus-visibile;
+    position: absolute;
+    top: v.$spazio-md;
+    right: v.$spazio-md;
+    width: 36px;
+    height: 36px;
+    border: 1px solid v.$bordo-forte;
+    border-radius: 50%;
+    background: v.$superficie-alta;
+    color: v.$testo;
+    cursor: pointer;
+
+    &:hover {
+      border-color: v.$accento;
+    }
+  }
+
+  &__griglia {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: v.$spazio-xl;
+    align-items: start;
+
+    @include m.mobile {
+      grid-template-columns: 1fr;
+      gap: v.$spazio-lg;
+    }
+  }
+
+  &__poster {
+    border-radius: v.$raggio-md;
+
+    @include m.mobile {
+      width: 140px;
+    }
+  }
+
+  &__titolo {
+    @include m.display(clamp(2rem, 4vw, 3rem));
+    margin-top: v.$spazio-xs;
+    padding-right: v.$spazio-xl;
+    overflow-wrap: anywhere;
+  }
+
+  &__generi {
+    margin-top: v.$spazio-sm;
+    color: v.$testo-tenue;
+  }
+
+  &__trama {
+    margin-top: v.$spazio-lg;
+    line-height: 1.6;
+  }
+
+  &__dati {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: v.$spazio-sm v.$spazio-lg;
+    margin-top: v.$spazio-lg;
+    padding-top: v.$spazio-lg;
+    border-top: 1px solid v.$bordo;
+
+    dt {
+      @include m.mono(0.6875rem);
+      padding-top: 2px;
+      color: v.$testo-fioco;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    dd {
+      margin: 0;
+      color: v.$testo-tenue;
+    }
+  }
+}
+
+body:has(.scheda[open]) {
+  overflow: hidden;
+}
+
+.apri-scheda {
+  @include m.focus-visibile;
+  display: block;
+  align-self: start;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline-offset: -3px;
+  }
+}

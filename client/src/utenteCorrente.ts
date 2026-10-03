@@ -4,6 +4,45 @@ export interface UtenteCorrente {
 }
 
 const CHIAVE = "moviematch:utente";
+const CHIAVE_PROFILI = "moviematch:profili";
+
+export function leggiProfili(): string[] {
+  try {
+    const grezzo = localStorage.getItem(CHIAVE_PROFILI);
+    if (!grezzo) return [];
+
+    const dati: unknown = JSON.parse(grezzo);
+    if (!Array.isArray(dati) || dati.some((id) => typeof id !== "string")) {
+      return [];
+    }
+    return dati;
+  } catch {
+    return [];
+  }
+}
+
+export function aggiungiProfilo(id: string): void {
+  const profili = leggiProfili();
+  if (profili.includes(id)) return;
+
+  try {
+    localStorage.setItem(CHIAVE_PROFILI, JSON.stringify([...profili, id]));
+  } catch {
+    // stesso commento di salvaUtente: se localStorage è bloccato, pazienza
+  }
+}
+
+export function rimuoviProfilo(id: string): void {
+  const profili = leggiProfili();
+  try {
+    localStorage.setItem(
+      CHIAVE_PROFILI,
+      JSON.stringify(profili.filter((p) => p !== id)),
+    );
+  } catch {
+    // stesso commento di salvaUtente: se localStorage è bloccato, pazienza
+  }
+}
 
 export function leggiUtente(): UtenteCorrente | null {
   try {

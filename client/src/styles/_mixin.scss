@@ -21,9 +21,9 @@
 }
 
 @mixin superficie {
-  background: v.$sfondo-elevato;
+  background: v.$superficie;
   border: 1px solid v.$bordo;
-  border-radius: v.$raggio-md;
+  border-radius: v.$raggio-lg;
 }
 
 @mixin focus-visibile {
@@ -38,4 +38,29 @@
   -webkit-line-clamp: $righe;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+// Titoli grandi, condensati e in maiuscolo.
+@mixin display($dimensione) {
+  font-family: v.$font-titoli;
+  font-size: $dimensione;
+  font-weight: 800;
+  font-stretch: v.$larghezza-display;
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+// Etichette e metadati in monospazio.
+@mixin mono($dimensione: 0.75rem) {
+  font-family: v.$font-mono;
+  font-size: $dimensione;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+@mixin contenitore($larghezza: v.$larghezza-max) {
+  width: 100%;
+  max-width: $larghezza;
+  margin-inline: auto;
 }

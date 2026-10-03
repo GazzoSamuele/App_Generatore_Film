@@ -1,6 +1,6 @@
 import { Film, type IFilm } from "../models/Film.js";
 import type { Response, Request } from "express";
-import type { QueryFilter } from "mongoose";
+import { Types, type QueryFilter } from "mongoose";
 
 const PAGINA_MIN = 1;
 const PER_PAGINA_DEFAULT = 20;
@@ -74,16 +74,52 @@ export async function listaFilm(req: Request, res: Response) {
 }
 
 export async function listaGeneri(req: Request, res: Response) {
-    try{ 
-        const conteggi = await Film.aggregate([
-        { $unwind: "$generi" },
-        { $group: { _id: "$generi", quanti: { $sum: 1 } } },
-        { $sort: { quanti: -1 } },
-        { $project: { _id: 0, genere: "$_id", quanti: 1 } },
-        ]);
-        res.json(conteggi)
-    } catch (errore) {
-        console.error("c'è stato un errore nel caricamento del contenuto", errore); 
-        res.status(500).json({ errore: "Errore interno del server"})
+  try {
+    const conteggi = await Film.aggregate([
+      { $unwind: "$generi" },
+      { $group: { _id: "$generi", quanti: { $sum: 1 } } },
+      { $sort: { quanti: -1 } },
+      { $project: { _id: 0, genere: "$_id", quanti: 1 } },
+    ]);
+    res.json(conteggi);
+  } catch (errore) {
+    console.error("c'è stato un errore nel caricamento del contenuto", errore);
+    res.status(500).json({ errore: "Errore interno del server" });
+  }
+}
+
+export async function dettaglioFilm(req: Request, res: Response) {
+  try {
+    const { filmId } = req.params;
+
+    if (!Types.ObjectId.isValid(String(filmId))) {
+      res.status(400).json({ errore: "filmId non valido" });
+      return;
     }
+
+    const film = await Film.findById(filmId).lean();
+
+    if (!film) {
+      res.status(404).json({ errore: "Titolo non trovato" });
+      return;
+    }
+
+    res.json({
+      id: String(film._id),
+      titolo: film.titolo,
+      tipo: film.tipo,
+      anno: film.anno,
+      durataMinuti: film.durataMinuti,
+      generi: film.generi,
+      piattaforme: film.piattaforme,
+      regista: film.regista,
+      cast: film.cast,
+      posterUrl: film.posterUrl,
+      votoMedio: film.votoMedio,
+      descrizione: film.descrizione,
+    });
+  } catch (errore) {
+    console.error(errore);
+    res.status(500).json({ errore: "Errore interno del server" });
+  }
 }

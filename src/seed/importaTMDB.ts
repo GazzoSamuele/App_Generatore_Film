@@ -3,8 +3,12 @@ import mongoose from "mongoose";
 import { connectDB } from "../config/db.js";
 import { Film, type IFilm } from "../models/Film.js";
 import { Utente } from "../models/Utente.js";
-import { mappaFilm } from "./mappaTMDB.js";
-import type { DettaglioFilmTMDB, PaginaPopolariTMDB } from "./tipiTMDB.js";
+import { mappaFilm, mappaSerie } from "./mappaTMDB.js";
+import type {
+  DettaglioFilmTMDB,
+  DettaglioSerieTMDB,
+  PaginaPopolariTMDB,
+} from "./tipiTMDB.js";
 
 const BASE = "https://api.themoviedb.org/3";
 const LINGUA = "it-IT";
@@ -34,7 +38,27 @@ const GENERI_TMDB: Record<string, number> = {
   Western: 37,
 };
 
+const GENERI_SERIE_TMDB: Record<string, number> = {
+  "Action & Adventure": 10759,
+  Animazione: 16,
+  Commedia: 35,
+  Crime: 80,
+  Documentario: 99,
+  Dramma: 18,
+  Famiglia: 10751,
+  Kids: 10762,
+  Mistero: 9648,
+  "Sci-Fi & Fantasy": 10765,
+  "War & Politics": 10768,
+  Western: 37,
+};
+
 const API_KEY = process.env.TMDB_API_KEY;
+
+const TIPO = process.argv[2] ?? "film";
+const PERCORSO_TMDB = TIPO === "film" ? "movie" : "tv";
+const CAMPO_DATA = TIPO === "film" ? "release_date.lte" : "first_air_date.lte";
+const GENERI = TIPO === "film" ? GENERI_TMDB : GENERI_SERIE_TMDB;
 
 function pausa(ms: number): Promise<void> {
   return new Promise((risolvi) => setTimeout(risolvi, ms));
@@ -42,7 +66,7 @@ function pausa(ms: number): Promise<void> {
 
 async function chiamaTMDB<T>(
   percorso: string,
-  parametri: Record<string, string> = {}
+  parametri: Record<string, string> = {},
 ): Promise<T> {
   const url = new URL(`${BASE}${percorso}`);
   url.searchParams.set("api_key", API_KEY ?? "");
@@ -62,17 +86,20 @@ async function raccogliIds(): Promise<number[]> {
   const oggi = new Date().toISOString().slice(0, 10);
   const ids = new Set<number>();
 
-  for (const [nome, idGenere] of Object.entries(GENERI_TMDB)) {
+  for (const [nome, idGenere] of Object.entries(GENERI)) {
     let raccoltiPerGenere = 0;
 
     for (let pagina = 1; pagina <= PAGINE_PER_GENERE; pagina++) {
-      const dati = await chiamaTMDB<PaginaPopolariTMDB>("/discover/movie", {
-        page: String(pagina),
-        with_genres: String(idGenere),
-        sort_by: "vote_count.desc",
-        "vote_count.gte": VOTI_MINIMI,
-        "release_date.lte": oggi,
-      });
+      const dati = await chiamaTMDB<PaginaPopolariTMDB>(
+        `/discover/${PERCORSO_TMDB}`,
+        {
+          page: String(pagina),
+          with_genres: String(idGenere),
+          sort_by: "vote_count.desc",
+          "vote_count.gte": VOTI_MINIMI,
+          [CAMPO_DATA]: oggi,
+        },
+      );
 
       for (const film of dati.results) {
         ids.add(film.id);
@@ -87,17 +114,27 @@ async function raccogliIds(): Promise<number[]> {
   return [...ids];
 }
 
-async function scaricaFilm(ids: number[]): Promise<{ film: IFilm[]; scartati: number }> {
+async function scaricaFilm(
+  ids: number[],
+): Promise<{ film: IFilm[]; scartati: number }> {
   const film: IFilm[] = [];
   let scartati = 0;
 
   for (const [indice, id] of ids.entries()) {
     try {
-      const dettaglio = await chiamaTMDB<DettaglioFilmTMDB>(`/movie/${id}`, {
-        append_to_response: "credits,keywords,watch/providers",
-      });
+      let mappato: IFilm;
 
-      const mappato = mappaFilm(dettaglio);
+      if (TIPO === "film") {
+        const dettaglio = await chiamaTMDB<DettaglioFilmTMDB>(`/movie/${id}`, {
+          append_to_response: "credits,keywords,watch/providers",
+        });
+        mappato = mappaFilm(dettaglio);
+      } else {
+        const dettaglio = await chiamaTMDB<DettaglioSerieTMDB>(`/tv/${id}`, {
+          append_to_response: "credits,keywords,watch/providers",
+        });
+        mappato = mappaSerie(dettaglio);
+      }
 
       if (mappato.anno === 0 || mappato.generi.length === 0) {
         scartati++;
@@ -106,8 +143,9 @@ async function scaricaFilm(ids: number[]): Promise<{ film: IFilm[]; scartati: nu
       }
     } catch (errore) {
       scartati++;
-      const messaggio = errore instanceof Error ? errore.message : String(errore);
-      console.warn(`   ⚠️  film ${id} saltato: ${messaggio}`);
+      const messaggio =
+        errore instanceof Error ? errore.message : String(errore);
+      console.warn(`   ⚠️  ${TIPO} ${id} saltato: ${messaggio}`);
     }
 
     if ((indice + 1) % OGNI_QUANTI_LOG === 0) {
@@ -124,25 +162,31 @@ async function importa() {
     throw new Error("TMDB_API_KEY non definita: controlla il file .env");
   }
 
+  if (TIPO !== "film" && TIPO !== "serie") {
+    throw new Error("il tipo deve essere o film o serie");
+  }
+
   await connectDB();
 
   console.log(`📥 Raccolgo gli id genere per genere...`);
   const ids = await raccogliIds();
-  console.log(`   ${ids.length} film distinti raccolti`);
+  console.log(`   ${ids.length} ${TIPO}`);
 
   console.log("🎬 Scarico i dettagli...");
   const { film, scartati } = await scaricaFilm(ids);
 
-  console.log("🧹 Svuoto la collezione films...");
-  await Film.deleteMany({});
+  console.log(`🧹 Svuoto ${TIPO} serie...`);
+  await Film.deleteMany({ tipo: TIPO });
 
   const inseriti = await Film.insertMany(film);
-  console.log(`✅ ${inseriti.length} film importati, ${scartati} scartati`);
+  console.log(`✅ ${inseriti.length} ${TIPO}, ${scartati} scartati`);
 
-  const azzerati = await Utente.updateMany({}, { $set: { storicoVisto: [] } });
-  console.log(
-    `♻️  Storico azzerato per ${azzerati.modifiedCount} utenti (i vecchi id non esistono più)`
+  const idsEsistenti = await Film.distinct("_id");
+  const ripuliti = await Utente.updateMany(
+    { storicoVisto: { $elemMatch: { film: { $nin: idsEsistenti } } } },
+    { $pull: { storicoVisto: { film: { $nin: idsEsistenti } } } },
   );
+  console.log(`♻️  Voti orfani tolti a ${ripuliti.matchedCount} utenti`);
 }
 
 importa()

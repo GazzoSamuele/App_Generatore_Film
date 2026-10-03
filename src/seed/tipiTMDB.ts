@@ -40,6 +40,28 @@ export interface DettaglioFilmTMDB {
   };
 }
 
+export interface DettaglioSerieTMDB {
+  id: number;
+  name: string;
+  overview: string;
+  first_air_date: string;
+  episode_run_time: number[] | null;
+  last_episode_to_air: { runtime: number | null } | null;
+  poster_path: string | null;
+  vote_average: number;
+  genres: GenereTMDB[];
+  created_by: PersonaTMDB[];
+  credits: {
+    cast: PersonaTMDB[];
+  };
+  keywords?: {
+    results: { name: string }[];
+  };
+  "watch/providers"?: {
+    results: Record<string, DisponibilitaPaeseTMDB>;
+  };
+}
+
 export interface PaginaPopolariTMDB {
   page: number;
   total_pages: number;

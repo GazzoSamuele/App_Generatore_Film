@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { Types } from "mongoose";
 import { generaRaccomandazioni } from "../services/raccomandazioni.js";
 
 const LIMITE_MIN = 6;
@@ -13,9 +14,16 @@ function limiteDa(valore: unknown): number {
 export async function getRaccomandazioni(req: Request, res: Response) {
   try {
     const { utenteId } = req.params;
+
+    // Senza questo controllo un id malformato fa fallire Mongoose e diventa un 500.
+    if (!Types.ObjectId.isValid(String(utenteId))) {
+      res.status(400).json({ errore: "utenteId non valido" });
+      return;
+    }
+
     const limite = limiteDa(req.query.limite);
 
-    const raccomandazioni = await generaRaccomandazioni(utenteId as string, limite);
+    const raccomandazioni = await generaRaccomandazioni(String(utenteId), limite);
 
     res.json({
       totale: raccomandazioni.length,
