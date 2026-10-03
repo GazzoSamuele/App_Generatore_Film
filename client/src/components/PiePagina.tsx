@@ -44,6 +44,9 @@ function PiePagina() {
             </a>
             .
           </p>
+          <p>
+            <a href="/privacy.html">Informativa privacy</a>
+          </p>
         </div>
       </div>
     </footer>

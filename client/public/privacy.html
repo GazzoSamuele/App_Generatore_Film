@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Privacy | MovieMatch</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --sfondo: #0e0d0c;
+        --superficie: #1a1816;
+        --bordo: #2a2724;
+        --testo: #f3eee6;
+        --testo-tenue: #a8a196;
+        --accento: #ff5a36;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--sfondo);
+        color: var(--testo);
+        font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.65;
+      }
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 48px 20px 64px;
+      }
+      a { color: var(--accento); }
+      .indietro { display: inline-block; margin-bottom: 32px; font-weight: 600; }
+      h1 { margin: 0 0 4px; font-size: 2rem; line-height: 1.2; }
+      .aggiornato { margin: 0 0 32px; color: var(--testo-tenue); font-size: 0.9rem; }
+      h2 { margin: 36px 0 8px; font-size: 1.15rem; }
+      p, li { color: var(--testo-tenue); }
+      strong { color: var(--testo); }
+      ul { padding-left: 20px; }
+      li + li { margin-top: 6px; }
+      .riquadro {
+        padding: 16px 18px;
+        border: 1px solid var(--bordo);
+        border-radius: 12px;
+        background: var(--superficie);
+      }
+      code { font-size: 0.9em; color: var(--testo); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="indietro" href="/">← Torna a MovieMatch</a>
+      <h1>Informativa privacy</h1>
+      <p class="aggiornato">Ultimo aggiornamento: 3 ottobre 2026</p>
+
+      <p class="riquadro">
+        MovieMatch è un <strong>progetto dimostrativo personale</strong>, pubblicato come parte
+        del mio portfolio. Non ha scopi commerciali, non mostra pubblicità e non usa strumenti di
+        statistica o di profilazione.
+      </p>
+
+      <h2>Titolare del trattamento</h2>
+      <p>
+        Samuele Gazzo — email:
+        <a href="mailto:samuelegazzo69@gmail.com">samuelegazzo69@gmail.com</a>
+      </p>
+
+      <h2>Quali dati vengono trattati</h2>
+      <ul>
+        <li>
+          <strong>Dati tecnici di navigazione</strong>: indirizzo IP, tipo di browser, data e ora
+          delle richieste. Vengono registrati automaticamente nei log del servizio di hosting e
+          usati dal server, solo in memoria, per limitare il numero di richieste e prevenire
+          abusi.
+        </li>
+        <li>
+          <strong>Dati del profilo</strong>: il nome che scegli (puoi usare un nome di fantasia),
+          i generi preferiti e i voti che dai ai titoli. Non vengono chiesti email, password o
+          altri dati personali.
+        </li>
+      </ul>
+
+      <h2>Cookie e memoria del browser</h2>
+      <p>
+        MovieMatch <strong>non usa cookie</strong>. Salva nella memoria locale del browser
+        (<code>localStorage</code>) solo l'identificativo dei profili creati da quel browser e del
+        profilo attivo, per mostrarti i tuoi profili quando torni. È uno strumento tecnico,
+        necessario al funzionamento dell'app, e non richiede consenso. Puoi cancellarlo in
+        qualsiasi momento dalle impostazioni del browser.
+      </p>
+
+      <h2>Perché vengono trattati</h2>
+      <p>
+        Per far funzionare l'app, cioè calcolare i consigli in base ai tuoi gusti (art. 6.1.b
+        GDPR), e per garantirne la sicurezza (legittimo interesse, art. 6.1.f GDPR). I consigli
+        sono calcolati in modo automatico dai tuoi voti, ma non producono alcun effetto giuridico
+        su di te.
+      </p>
+
+      <h2>Chi tratta i dati per conto del titolare</h2>
+      <ul>
+        <li><strong>Vercel Inc.</strong> — hosting del sito e del server.</li>
+        <li><strong>MongoDB Inc.</strong> (MongoDB Atlas) — database dei profili e dei voti.</li>
+        <li>
+          <strong>The Movie Database (TMDB)</strong> — le locandine vengono caricate dai server di
+          TMDB, che ricevono quindi l'indirizzo IP del tuo browser.
+          <a href="https://www.themoviedb.org/privacy-policy" rel="noopener">Privacy di TMDB</a>
+        </li>
+      </ul>
+      <p>
+        Alcuni di questi fornitori hanno sede negli Stati Uniti: i trasferimenti avvengono con le
+        garanzie previste dal GDPR (EU-US Data Privacy Framework o clausole contrattuali
+        standard). I caratteri tipografici sono ospitati sul sito stesso: aprendo MovieMatch il
+        tuo browser non contatta Google.
+      </p>
+
+      <h2>Per quanto tempo</h2>
+      <p>
+        I dati del profilo restano finché il profilo esiste: se vuoi cancellarlo, scrivimi
+        all'indirizzo qui sopra. I log tecnici vengono conservati per i tempi previsti dal
+        servizio di hosting.
+      </p>
+
+      <h2>I tuoi diritti</h2>
+      <p>
+        Puoi chiedere in qualsiasi momento di accedere ai tuoi dati, correggerli, cancellarli,
+        limitarne il trattamento, opporti o riceverli in un formato leggibile (artt. 15-22 GDPR),
+        scrivendo all'email del titolare. Hai anche il diritto di presentare reclamo al
+        <a href="https://www.garanteprivacy.it" rel="noopener">Garante per la protezione dei dati personali</a>.
+      </p>
+    </main>
+  </body>
+</html>
